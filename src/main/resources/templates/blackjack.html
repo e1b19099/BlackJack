@@ -1,1 +1,14 @@
-BlackJackです～!!
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <a href="/blackjack/draw">カードを引く</a>
+    <div th:if="${card}">
+        マーク:"[[${card.suit}]]"
+        番号:"[[${card.number}]]"
+    </div>
+</body>
+</html>
