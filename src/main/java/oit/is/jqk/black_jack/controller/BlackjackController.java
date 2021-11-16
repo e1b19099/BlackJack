@@ -17,8 +17,18 @@ import oit.is.jqk.black_jack.model.CardMapper;
 @Controller
 @RequestMapping("/")
 public class BlackjackController {
-    @GetMapping("/blackjack")
+  @Autowired 
+  CardMapper cmapper;
+  @GetMapping("/blackjack")
     public String Blackjack01() {
       return "blackjack.html";
     }
-}
+@GetMapping("/blackjack/draw")
+  public String Blackjack02(ModelMap model) {
+   Card card=cmapper.selectById(33);
+   model.addAttribute("card",card);
+    return "blackjack.html";
+  }
+ }
+
+
