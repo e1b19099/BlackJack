@@ -1,6 +1,7 @@
 package oit.is.jqk.black_jack.controller;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,18 +18,21 @@ import oit.is.jqk.black_jack.model.CardMapper;
 @Controller
 @RequestMapping("/")
 public class BlackjackController {
-  @Autowired 
+  @Autowired
   CardMapper cmapper;
+
   @GetMapping("/blackjack")
-    public String Blackjack01() {
-      return "blackjack.html";
-    }
-@GetMapping("/blackjack/draw")
-  public String Blackjack02(ModelMap model) {
-   Card card=cmapper.selectById(33);
-   model.addAttribute("card",card);
+  public String Blackjack01() {
     return "blackjack.html";
   }
- }
 
-
+  @GetMapping("/blackjack/draw")
+  public String Blackjack02(ModelMap model) {
+    Random rand = new Random();
+    int id = rand.nextInt(52) % 52 + 1;
+    Card card = cmapper.selectById(id);
+    model.addAttribute("card", card);
+    model.addAttribute("id", id);
+    return "blackjack.html";
+  }
+}
