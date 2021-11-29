@@ -4,19 +4,26 @@ CREATE TABLE card (
     number INT NOT NULL
 );
 CREATE TABLE userinfo (
-    id INT NOT NULL PRIMARY KEY,
+    user_id IDENTITY,
     username CHAR NOT NULL,
     password CHAR,
     chip INT NOT NULL
 );
 CREATE TABLE room (
+  room_id IDENTITY,
+  room_name CHAR,
   date date,
+  isCPU boolean,
   winner INT
 );
 
 CREATE TABLE RoomUser (
-  id INT,
-  MatchID INT,
+  room_id INT,
+  user_id INT,
   deal INT,
-  DealCardID INT
+  DealCardID INT,
+  total INT default (0),
+  PRIMARY KEY(room_id,user_id),
+  FOREIGN KEY (room_id) REFERENCES room(room_id),
+  FOREIGN KEY (user_id) REFERENCES userinfo(user_id)
 );
