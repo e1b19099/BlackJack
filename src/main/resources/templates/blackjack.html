@@ -12,13 +12,17 @@
   </div>
   <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}">START</a>
 
-  <p th:if="${cards}">
-  <div th:each="card,stat:${cards}">
-    ID:[[${card.id}]]
-    マーク:"[[${card.suit}]]"
-    番号:"[[${card.number}]]"
+  <div th:if="${cards}">
+    <div th:each="card,stat:${cards}">
+      ID:[[${card.id}]]
+      マーク:"[[${card.suit}]]"
+      番号:"[[${card.number}]]"
+    </div>
+    <div>
+      合計:[[${total}]]
+    </div>
+
   </div>
-  </p>
 
 
 </body>
