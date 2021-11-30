@@ -88,7 +88,6 @@ public class BlackjackController {
     ArrayList<Card> cards = new ArrayList<>();
     ArrayList<Card> dCards = new ArrayList<>();
     int total = 0;
-    int dTotal = 0;
     for (int i = 0; i < 2; i++) {
       Random rand = new Random();
       int id = rand.nextInt(52) % 52 + 1;
@@ -106,14 +105,13 @@ public class BlackjackController {
       int number = card.getNumber();
       if (number > 10)
         number = 10;
-      dTotal += number;
+      total += number;
       dCards.add(card);
     }
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cards);
     model.addAttribute("total", total);
     model.addAttribute("dCards", dCards);
-    model.addAttribute("dTotal", dTotal);
     return "blackjack.html";
   }
 }
