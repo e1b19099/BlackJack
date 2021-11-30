@@ -10,12 +10,17 @@
   <div th:if=${room_id}>
     <h1>ルーム[[${room_id}]]へようこそ！！</h1>
   </div>
-  <a th:href="@{/blackjack/{rid}/draw(rid=${room_id})}">カードを引く</a>
-  [[${id}]]
-  <div th:if="${card}">
+  <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}">START</a>
+
+  <p th:if="${cards}">
+  <div th:each="card,stat:${cards}">
+    ID:[[${card.id}]]
     マーク:"[[${card.suit}]]"
     番号:"[[${card.number}]]"
   </div>
+  </p>
+
+
 </body>
 
 </html>
