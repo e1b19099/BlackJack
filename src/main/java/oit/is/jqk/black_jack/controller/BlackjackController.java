@@ -29,6 +29,8 @@ public class BlackjackController {
   @Autowired
   RoomMapper rMapper;
 
+  ArrayList<Card> cList = new ArrayList<>();
+
   @GetMapping("/room")
   public String Room01(ModelMap model) {
     ArrayList<Room> rooms = rMapper.selectAllRoom();
@@ -97,7 +99,7 @@ public class BlackjackController {
       if (number > 10)
         number = 10;
       total += number;
-      cards.add(card);
+      cList.add(card);
     }
     for (int i = 0; i < 2; i++) {
       Random rand = new Random();
@@ -110,7 +112,7 @@ public class BlackjackController {
       dCards.add(card);
     }
     model.addAttribute("room_id", room_id);
-    model.addAttribute("cards", cards);
+    model.addAttribute("cards", cList);
     model.addAttribute("total", total);
     model.addAttribute("dCards", dCards);
     model.addAttribute("dTotal", dTotal);
