@@ -22,7 +22,9 @@
     <div>
       合計:[[${total}]]
     </div>
-
+    <form action="/blackjack/{room_id}/stand" method="get">
+      <input type="submit" value="スタンド">
+    </form>
   </div>
 
   <div th:if="${dCards}">
