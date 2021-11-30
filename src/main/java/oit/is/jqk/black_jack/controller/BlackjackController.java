@@ -86,14 +86,20 @@ public class BlackjackController {
   @GetMapping("/blackjack/{room_id}/start")
   public String Blackjack03(@PathVariable Integer room_id, ModelMap model) {
     ArrayList<Card> cards = new ArrayList<>();
+    int total = 0;
     for (int i = 0; i < 2; i++) {
       Random rand = new Random();
       int id = rand.nextInt(52) % 52 + 1;
       Card card = cmapper.selectById(id);
+      int number = card.getNumber();
+      if (number > 10)
+        number = 10;
+      total += number;
       cards.add(card);
     }
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cards);
+    model.addAttribute("total", total);
     return "blackjack.html";
   }
 }
