@@ -88,12 +88,8 @@ public class BlackjackController {
   @GetMapping("/blackjack/{room_id}/start")
   public String Blackjack03(@PathVariable Integer room_id, ModelMap model) {
     ArrayList<Card> dCards = new ArrayList<>();
-    ArrayList<Card> AddDCards = new ArrayList<>();
     int total = 0;
-    int dTotal = 0;// スタンド後の数字の合計
-    int twodTotal = 0; // 初期手札の数字の合計
-    // プレイヤーの処理
-    // 初期手札の配布
+    int dTotal = 0;
     for (int i = 0; i < 2; i++) {
       Random rand = new Random();
       int id = rand.nextInt(52) % 52 + 1;
@@ -104,40 +100,21 @@ public class BlackjackController {
       total += number;
       cList.add(card);
     }
-    // ディーラーの処理
-    // 初期手札の配布
     for (int i = 0; i < 2; i++) {
       Random rand = new Random();
       int id = rand.nextInt(52) % 52 + 1;
       Card card = cmapper.selectById(id);
       int number = card.getNumber();
-      if (number > 10) {
+      if (number > 10)
         number = 10;
-      }
       dTotal += number;
       dCards.add(card);
-      twodTotal = dTotal;
-    }
-
-    // ヒット処理
-    while (dTotal <= 16) {
-      Random rand = new Random();
-      int id = rand.nextInt(52) % 52 + 1;
-      Card Addcard = cmapper.selectById(id);
-      int number2 = Addcard.getNumber();
-      if (number2 > 10) {
-        number2 = 10;
-      }
-      dTotal += number2;
-      AddDCards.add(Addcard);
     }
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cList);
     model.addAttribute("total", total);
     model.addAttribute("dCards", dCards);
     model.addAttribute("dTotal", dTotal);
-    model.addAttribute("AddDCards", AddDCards);
-    model.addAttribute("tmpdTotal", twodTotal);
     return "blackjack.html";
   }
 }

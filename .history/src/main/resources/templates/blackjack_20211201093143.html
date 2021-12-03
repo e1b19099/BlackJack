@@ -35,19 +35,9 @@
       番号:"[[${card.number}]]"
     </div>
     <div>
-      引く前の合計:[[${tmpdTotal}]]
+      合計:[[${dTotal}]]
     </div>
-  </div>
 
-  <div th:if="${AddDCards}">
-    <div th:each="card2,stat:${AddDCards}">
-      トランプの数字の合計が16以下なのでヒットします<br>
-      ID:[[${card2.id}]]
-      マーク:"[[${card2.suit}]]"
-      番号:"[[${card2.number}]]"
-    </div>
-    トランプの数字の合計が17以上なのでスタンドします<br>
-    スタンド後の合計:[[${dTotal}]]
   </div>
 
 </body>
