@@ -136,7 +136,7 @@ public class BlackjackController {
     return "blackjack.html";
   }
 
-  //Hit処理
+  // Hit処理
   @GetMapping("/blackjack/{room_id}/hit")
   public String Blackjack04Hit(@PathVariable Integer room_id, ModelMap model) {
     // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
@@ -193,6 +193,45 @@ public class BlackjackController {
     model.addAttribute("dTotal", dTotal);
     model.addAttribute("AddDCards", AddDCards);
     model.addAttribute("tmpdTotal", twodTotal);
+    return "blackjack.html";
+  }
+
+  // スタンド処理
+  @GetMapping("/blackjack/{room_id}/stand")
+  public String Blackjack05stand(@PathVariable Integer room_id, ModelMap model) {
+    int total = 0;
+    int dTotal = 0;// スタンド後の数字の合計
+    int tmpdTotal = 0; // 初期手札の数字の合計
+    boolean stand_flag = true;
+    // プレイヤーの初期手札の内容取得
+    for (Card card : cList) {
+      int number = card.getNumber();
+      if (number > 10)
+        number = 10;
+      total += number;
+    }
+    // ディーラーの初期手札の内容取得
+    for (Card card : dList) {
+      int number = card.getNumber();
+      if (number > 10)
+        number = 10;
+      dTotal += number;
+    }
+    // 追加手札の内容取得
+    if (dList.size() - 1 > 2) {
+      Card dAddDcards = dList.get(dList.size() - 1);
+      tmpdTotal = dTotal - dAddDcards.getNumber();
+      model.addAttribute("AddDCards", dAddDcards);
+    }
+
+    model.addAttribute("room_id", room_id);
+    model.addAttribute("cards", cList);
+    model.addAttribute("total", total);
+    model.addAttribute("dCards", dList);
+    model.addAttribute("dTotal", dTotal);
+
+    model.addAttribute("tmpdTotal", tmpdTotal);
+    model.addAttribute("stand_flag", stand_flag);
     return "blackjack.html";
   }
 }
