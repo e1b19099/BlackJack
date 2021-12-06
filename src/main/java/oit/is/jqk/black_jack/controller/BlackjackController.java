@@ -30,6 +30,7 @@ public class BlackjackController {
   RoomMapper rMapper;
 
   ArrayList<Card> cList = new ArrayList<>();
+  ArrayList<Card> dList = new ArrayList<>();
 
   @GetMapping("/room")
   public String Room01(ModelMap model) {
@@ -87,8 +88,8 @@ public class BlackjackController {
 
   @GetMapping("/blackjack/{room_id}/start")
   public String Blackjack03(@PathVariable Integer room_id, ModelMap model) {
-    ArrayList<Card> dCards = new ArrayList<>();
-    ArrayList<Card> AddDCards = new ArrayList<>();
+    // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
+    // ArrayList<Card> AddDCards = new ArrayList<>();
     int total = 0;
     int dTotal = 0;// スタンド後の数字の合計
     int twodTotal = 0; // 初期手札の数字の合計
@@ -115,7 +116,61 @@ public class BlackjackController {
         number = 10;
       }
       dTotal += number;
-      dCards.add(card);
+      dList.add(card);// dCardsをdListに変更_Z0413
+      twodTotal = dTotal;
+    }
+    // ヒット処理を停止 playerHit
+    /*
+     * // ヒット処理 while (dTotal <= 16) { Random rand = new Random(); int id =
+     * rand.nextInt(52) % 52 + 1; Card Addcard = cmapper.selectById(id); int number2
+     * = Addcard.getNumber(); if (number2 > 10) { number2 = 10; } dTotal += number2;
+     * AddDCards.add(Addcard); }
+     */
+    model.addAttribute("room_id", room_id);
+    model.addAttribute("cards", cList);
+    model.addAttribute("total", total);
+    model.addAttribute("dCards", dList);// model.addAttribute("dCards", dCards); //playerHit dCardsをdListに変更
+    model.addAttribute("dTotal", dTotal);
+    // model.addAttribute("AddDCards", AddDCards); //playerHit
+    model.addAttribute("tmpdTotal", twodTotal);
+    return "blackjack.html";
+  }
+
+  //Hit処理
+  @GetMapping("/blackjack/{room_id}/hit")
+  public String Blackjack04Hit(@PathVariable Integer room_id, ModelMap model) {
+    // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
+    ArrayList<Card> AddDCards = new ArrayList<>();
+    int total = 0;
+    int dTotal = 0;// スタンド後の数字の合計
+    int twodTotal = 0; // 初期手札の数字の合計
+    // プレイヤーの処理
+    // Hit前の手札の合計
+    for (Card card : cList) {
+      int number = card.getNumber();
+      if (number > 10)
+        number = 10;
+      total += number;
+    }
+
+    Random hitrand = new Random();
+    int hitId = hitrand.nextInt(52) % 52 + 1;
+    Card Hitcard = cmapper.selectById(hitId);
+    int hitNumber = Hitcard.getNumber();
+    if (hitNumber > 10) {
+      hitNumber = 10;
+    }
+    total += hitNumber;
+    cList.add(Hitcard);
+
+    // ディーラーの処理
+    // 初期手札の合計
+    for (Card card : dList) {
+      int number = card.getNumber();
+      if (number > 10) {
+        number = 10;
+      }
+      dTotal += number;
       twodTotal = dTotal;
     }
 
@@ -134,7 +189,7 @@ public class BlackjackController {
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cList);
     model.addAttribute("total", total);
-    model.addAttribute("dCards", dCards);
+    model.addAttribute("dCards", dList);
     model.addAttribute("dTotal", dTotal);
     model.addAttribute("AddDCards", AddDCards);
     model.addAttribute("tmpdTotal", twodTotal);
