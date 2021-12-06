@@ -1,5 +1,6 @@
 package oit.is.jqk.black_jack.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +16,7 @@ import oit.is.jqk.black_jack.service.MyUserService;
 @EnableWebSecurity
 public class BlackJackAuthConfiguration extends WebSecurityConfigurerAdapter {
 
+  @Autowired
   private MyUserService userService;
 
   /**

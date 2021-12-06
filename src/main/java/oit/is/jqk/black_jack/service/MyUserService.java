@@ -14,7 +14,7 @@ import oit.is.jqk.black_jack.model.UserinfoMapper;
 
 @Service
 public class MyUserService implements UserDetailsService {
-
+  @Autowired
   private final UserinfoMapper uMapper;
 
   @Autowired
