@@ -6,15 +6,6 @@ public class Room {
   int room_id;
   String room_name;
   Date date;
-  boolean isCPU;
-
-  public boolean isCPU() {
-    return isCPU;
-  }
-
-  public void setCPU(boolean isCPU) {
-    this.isCPU = isCPU;
-  }
 
   int winner;
 

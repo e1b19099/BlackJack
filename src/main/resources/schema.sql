@@ -13,7 +13,6 @@ CREATE TABLE room (
   room_id IDENTITY,
   room_name CHAR,
   date date,
-  isCPU boolean,
   winner INT
 );
 

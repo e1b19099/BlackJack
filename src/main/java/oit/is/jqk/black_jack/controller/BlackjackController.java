@@ -51,16 +51,12 @@ public class BlackjackController {
   }
 
   @PostMapping("/room")
-  public String sample36(@RequestParam String roomname, @RequestParam Integer count, Boolean isCPU, ModelMap model) {
+  public String sample36(@RequestParam String roomname, @RequestParam Integer count, ModelMap model) {
     Room room = new Room();
     room.setRoom_name(roomname);
     long miliseconds = System.currentTimeMillis();
     Date date = new Date(miliseconds);
     room.setDate(date);
-    if (isCPU == null) {
-      isCPU = false;
-    }
-    room.setCPU(isCPU);
     rMapper.insertRoom(room);
     ArrayList<Room> rooms = rMapper.selectAllRoom();
     if (rooms.isEmpty()) {

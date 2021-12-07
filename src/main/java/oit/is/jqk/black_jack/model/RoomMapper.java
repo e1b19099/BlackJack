@@ -12,7 +12,7 @@ public interface RoomMapper {
   @Select("SELECT * from room;")
   ArrayList<Room> selectAllRoom();
 
-  @Insert("INSERT INTO room (room_name,date,isCPU,winner) VALUES (#{room_name},#{date},#{isCPU},#{winner});")
+  @Insert("INSERT INTO room (room_name,date,winner) VALUES (#{room_name},#{date},#{winner});")
   @Options(useGeneratedKeys = true, keyColumn = "room_id", keyProperty = "room_id")
   void insertRoom(Room room);
 }
