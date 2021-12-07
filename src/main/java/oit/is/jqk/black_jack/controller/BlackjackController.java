@@ -95,6 +95,7 @@ public class BlackjackController {
     cList.clear();
     dList.clear();
     int total = 0;
+    boolean stand_flag = false;
     int dTotal = 0;// スタンド後の数字の合計
     int twodTotal = 0; // 初期手札の数字の合計
     // プレイヤーの処理
@@ -137,6 +138,7 @@ public class BlackjackController {
     model.addAttribute("dTotal", dTotal);
     // model.addAttribute("AddDCards", AddDCards); //playerHit
     model.addAttribute("tmpdTotal", twodTotal);
+    model.addAttribute("stand_flag", stand_flag);
     return "blackjack.html";
   }
 
@@ -148,6 +150,7 @@ public class BlackjackController {
     int total = 0;
     int dTotal = 0;// スタンド後の数字の合計
     int twodTotal = 0; // 初期手札の数字の合計
+    boolean stand_flag = false;
     // プレイヤーの処理
     // Hit前の手札の合計
     for (Card card : cList) {
@@ -178,6 +181,7 @@ public class BlackjackController {
       twodTotal = dTotal;
     }
     if (total > 21) {
+      stand_flag = true;
       // ヒット処理
       while (dTotal <= 16) {
         Random rand = new Random();
@@ -199,6 +203,7 @@ public class BlackjackController {
     model.addAttribute("cards", cList);
     model.addAttribute("total", total);
     model.addAttribute("dCards", dList);
+    model.addAttribute("stand_flag", stand_flag);
 
     return "blackjack.html";
   }
