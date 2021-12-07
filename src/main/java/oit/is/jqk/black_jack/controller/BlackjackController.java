@@ -2,6 +2,7 @@ package oit.is.jqk.black_jack.controller;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class BlackjackController {
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
+  ArrayList<Card> deck = new ArrayList<>();
 
   @GetMapping("/room")
   public String Room01(ModelMap model) {
@@ -94,6 +96,9 @@ public class BlackjackController {
     // ArrayList<Card> AddDCards = new ArrayList<>();
     cList.clear();
     dList.clear();
+    deck = cmapper.selectAll();
+    // デッキシャッフル
+    Collections.shuffle(deck);
     int total = 0;
     boolean stand_flag = false;
     int dTotal = 0;// スタンド後の数字の合計
@@ -101,9 +106,10 @@ public class BlackjackController {
     // プレイヤーの処理
     // 初期手札の配布
     for (int i = 0; i < 2; i++) {
-      Random rand = new Random();
-      int id = rand.nextInt(52) % 52 + 1;
-      Card card = cmapper.selectById(id);
+      // Random rand = new Random();
+      // int id = rand.nextInt(52) % 52 + 1;
+      // Card card = cmapper.selectById(id);
+      Card card = deck.remove(0);
       int number = card.getNumber();
       if (number > 10)
         number = 10;
@@ -113,9 +119,10 @@ public class BlackjackController {
     // ディーラーの処理
     // 初期手札の配布
     for (int i = 0; i < 2; i++) {
-      Random rand = new Random();
-      int id = rand.nextInt(52) % 52 + 1;
-      Card card = cmapper.selectById(id);
+      // Random rand = new Random();
+      // int id = rand.nextInt(52) % 52 + 1;
+      // Card card = cmapper.selectById(id);
+      Card card = deck.remove(0);
       int number = card.getNumber();
       if (number > 10) {
         number = 10;
@@ -161,9 +168,10 @@ public class BlackjackController {
       total += number;
     }
 
-    Random hitrand = new Random();
-    int hitId = hitrand.nextInt(52) % 52 + 1;
-    Card Hitcard = cmapper.selectById(hitId);
+    // Random rand = new Random();
+    // int id = rand.nextInt(52) % 52 + 1;
+    // Card card = cmapper.selectById(id);
+    Card Hitcard = deck.remove(0);
     int hitNumber = Hitcard.getNumber();
     if (hitNumber > 10) {
       hitNumber = 10;
@@ -185,9 +193,10 @@ public class BlackjackController {
       stand_flag = true;
       // ヒット処理
       while (dTotal <= 16) {
-        Random rand = new Random();
-        int id = rand.nextInt(52) % 52 + 1;
-        Card Addcard = cmapper.selectById(id);
+        // Random rand = new Random();
+        // int id = rand.nextInt(52) % 52 + 1;
+        // Card card = cmapper.selectById(id);
+        Card Addcard = deck.remove(0);
         int number2 = Addcard.getNumber();
         if (number2 > 10) {
           number2 = 10;
@@ -260,9 +269,10 @@ public class BlackjackController {
 
     // ヒット処理
     while (dTotal <= 16) {
-      Random rand = new Random();
-      int id = rand.nextInt(52) % 52 + 1;
-      Card Addcard = cmapper.selectById(id);
+      // Random rand = new Random();
+      // int id = rand.nextInt(52) % 52 + 1;
+      // Card card = cmapper.selectById(id);
+      Card Addcard = deck.remove(0);
       int number2 = Addcard.getNumber();
       if (number2 > 10) {
         number2 = 10;
