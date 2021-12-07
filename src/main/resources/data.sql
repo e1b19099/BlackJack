@@ -1,5 +1,5 @@
-INSERT INTO userinfo (user_id,username,password,chip) VALUES (1,'いがき','password',1000);
-INSERT INTO userinfo (user_id,username,password,chip) VALUES (2,'ほんだ','password',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (1,'いがき','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (2,'ほんだ','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
 
 
 INSERT INTO card (id,suit,number) VALUES (1,'heart',1);

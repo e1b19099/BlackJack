@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
-public interface CardMapper{
-    @Select("SELECT id,suit,number from card where id = #{id}")
-    Card selectById(int id);
+public interface CardMapper {
+  @Select("SELECT id,suit,number from card where id = #{id}")
+  Card selectById(int id);
 }
