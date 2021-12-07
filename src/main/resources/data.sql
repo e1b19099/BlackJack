@@ -1,5 +1,8 @@
-INSERT INTO userinfo (user_id,username,password,chip) VALUES (1,'いがき','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
-INSERT INTO userinfo (user_id,username,password,chip) VALUES (2,'ほんだ','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (1,'okakita','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (2,'yagi','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (3,'wada','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (4,'katsu','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
+INSERT INTO userinfo (user_id,username,password,chip) VALUES (5,'a','$2y$10$HAf2drLCUgvDYtlhMjPie.VKu7WLnG10liJwrdKmxWYGcBBu0Hf6u',1000);
 
 
 INSERT INTO card (id,suit,number) VALUES (1,'heart',1);
