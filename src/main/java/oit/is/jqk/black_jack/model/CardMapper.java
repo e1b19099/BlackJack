@@ -11,4 +11,7 @@ import org.apache.ibatis.annotations.Select;
 public interface CardMapper {
   @Select("SELECT id,suit,number from card where id = #{id}")
   Card selectById(int id);
+
+  @Select("SELECT id,suit,number from card")
+  ArrayList<Card> selectAll();
 }
