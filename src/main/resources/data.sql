@@ -4,6 +4,7 @@ INSERT INTO userinfo (user_id,username,password,chip) VALUES (3,'wada','$2y$10$.
 INSERT INTO userinfo (user_id,username,password,chip) VALUES (4,'katsu','$2y$10$.2pCuEt1tWXNXc1e/Vz8fuhEOMpaiaRmKzf.TyQ2WU5WhS0ywkvUC',1000);
 INSERT INTO userinfo (user_id,username,password,chip) VALUES (5,'a','$2y$10$HAf2drLCUgvDYtlhMjPie.VKu7WLnG10liJwrdKmxWYGcBBu0Hf6u',1000);
 
+INSERT INTO room (room_id,room_name,date) VALUES (1,'テスト用','2021-12-07');
 
 INSERT INTO card (id,suit,number) VALUES (1,'heart',1);
 INSERT INTO card (id,suit,number) VALUES (2,'heart',2);
