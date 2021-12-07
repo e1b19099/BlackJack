@@ -73,6 +73,22 @@
     スタンド後の合計:[[${dTotal}]]
   </div>
 
+  <div th:switch="${result}">
+    <p th:case=1>
+      Win!
+    </p>
+    <p th:case=-1>
+      Lose
+    </p>
+    <p th:case=2>
+      Draw
+    </p>
+    <!--p th:case=*>
+
+    </p-->
+
+  </div>
+
 </body>
 
 </html>
