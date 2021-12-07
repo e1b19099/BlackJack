@@ -44,12 +44,21 @@
   <div th:if="${dCards}">
     <p>ディーラーの手札</p>
     <div th:each="card,stat:${dCards}">
-      ID:[[${card.id}]]
-      マーク:"[[${card.suit}]]"
-      番号:"[[${card.number}]]"
+      <p th:if="${stand_flag == true || stat.count gt 1}">
+        ID:[[${card.id}]]
+        マーク:"[[${card.suit}]]"
+        番号:"[[${card.number}]]"</p>
+      <p th:if="${stand_flag == false && stat.first}">
+        ID:??マーク:?????番号:??
+      </p>
     </div>
     <div>
-      引く前の合計:[[${tmpdTotal}]]
+      <p th:if="${stand_flag}">
+        引く前の合計:[[${tmpdTotal}]]
+      </p>
+      <p th:unless="${stand_flag}">
+        引く前の合計:?????
+      </p>
     </div>
   </div>
 
