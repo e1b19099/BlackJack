@@ -149,6 +149,7 @@ public class BlackjackController {
     ArrayList<Card> AddDCards = new ArrayList<>();
     int total = 0;
     int dTotal = 0;// スタンド後の数字の合計
+    int result = 0;
     int twodTotal = 0; // 初期手札の数字の合計
     boolean stand_flag = false;
     // プレイヤーの処理
@@ -197,13 +198,28 @@ public class BlackjackController {
       model.addAttribute("AddDCards", AddDCards);
       model.addAttribute("dTotal", dTotal);
 
+      // 勝敗判定
+      int p = total, d = dTotal;
+      if (total > 21)
+        p = -1;
+      if (dTotal > 21)
+        d = 0;
+
+      if (p > d)
+        result = 1;
+      else if (p < d)
+        result = -1;
+      else if (p == d)
+        result = 2;
     }
+
     model.addAttribute("tmpdTotal", twodTotal);
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cList);
     model.addAttribute("total", total);
     model.addAttribute("dCards", dList);
     model.addAttribute("stand_flag", stand_flag);
+    model.addAttribute("result", result);
 
     return "blackjack.html";
   }
@@ -256,6 +272,21 @@ public class BlackjackController {
     }
     model.addAttribute("AddDCards", AddDCards);
 
+    // 勝敗判定
+    int p = total, d = dTotal;
+    int result = 0;
+    if (total > 21)
+      p = -1;
+    if (dTotal > 21)
+      d = 0;
+
+    if (p > d)
+      result = 1;
+    else if (p < d)
+      result = -1;
+    else if (p == d)
+      result = 2;
+
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cList);
     model.addAttribute("total", total);
@@ -264,6 +295,8 @@ public class BlackjackController {
 
     model.addAttribute("tmpdTotal", tmpdTotal);
     model.addAttribute("stand_flag", stand_flag);
+
+    model.addAttribute("result", result);
     return "blackjack.html";
   }
 }
