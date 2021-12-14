@@ -1,10 +1,14 @@
 package oit.is.jqk.black_jack.controller;
 
 import java.sql.Date;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import javax.swing.UIManager;
+
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,8 @@ import oit.is.jqk.black_jack.model.Card;
 import oit.is.jqk.black_jack.model.CardMapper;
 import oit.is.jqk.black_jack.model.Room;
 import oit.is.jqk.black_jack.model.RoomMapper;
+import oit.is.jqk.black_jack.model.Userinfo;
+import oit.is.jqk.black_jack.model.UserinfoMapper;
 
 @Controller
 @RequestMapping("/")
@@ -30,9 +36,14 @@ public class BlackjackController {
   @Autowired
   RoomMapper rMapper;
 
+  @Autowired
+  UserinfoMapper uMapper;
+
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
   ArrayList<Card> deck = new ArrayList<>();
+
+  int betChip = 0;
 
   @GetMapping("/room")
   public String Room01(ModelMap model) {
@@ -142,19 +153,25 @@ public class BlackjackController {
     // model.addAttribute("AddDCards", AddDCards); //playerHit
     model.addAttribute("tmpdTotal", twodTotal);
     model.addAttribute("stand_flag", stand_flag);
+
+    model.addAttribute("bet", betChip);
+
     return "blackjack.html";
   }
 
   // Hit処理
   @GetMapping("/blackjack/{room_id}/hit")
-  public String Blackjack04Hit(@PathVariable Integer room_id, ModelMap model) {
+  public String Blackjack04Hit(Principal prin, @PathVariable Integer room_id, ModelMap model) {
     // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
     ArrayList<Card> AddDCards = new ArrayList<>();
     int total = 0;
     int dTotal = 0;// スタンド後の数字の合計
-    int result = 0;
     int twodTotal = 0; // 初期手札の数字の合計
+    int result = 0;
     boolean stand_flag = false;
+
+    String loginUser = prin.getName();// addBet
+
     // プレイヤーの処理
     // Hit前の手札の合計
     for (Card card : cList) {
@@ -205,18 +222,26 @@ public class BlackjackController {
 
       // 勝敗判定
       int p = total, d = dTotal;
+
       if (total > 21)
         p = -1;
       if (dTotal > 21)
         d = 0;
 
-      if (p > d)
+      if (p > d) {
         result = 1;
-      else if (p < d)
+        uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), betChip * 2);// addBet
+      } else if (p < d) {
         result = -1;
-      else if (p == d)
+      } else if (p == d) {
         result = 2;
-    }
+        uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), betChip);// addBet
+      }
+      Userinfo user = uMapper.selectUserByName(loginUser);
+
+      model.addAttribute("user", user);
+    } else
+      model.addAttribute("bet", betChip);
 
     model.addAttribute("tmpdTotal", twodTotal);
     model.addAttribute("room_id", room_id);
@@ -231,12 +256,14 @@ public class BlackjackController {
 
   // スタンド処理
   @GetMapping("/blackjack/{room_id}/stand")
-  public String Blackjack05stand(@PathVariable Integer room_id, ModelMap model) {
+  public String Blackjack05stand(Principal prin, @PathVariable Integer room_id, ModelMap model) {
     int total = 0;
     int dTotal = 0;// スタンド後の数字の合計
     int tmpdTotal = 0; // 初期手札の数字の合計
     ArrayList<Card> AddDCards = new ArrayList<>();
     boolean stand_flag = true;
+    String loginUser = prin.getName();// ユーザ名取得
+
     // プレイヤーの初期手札の内容取得
     for (Card card : cList) {
       int number = card.getNumber();
@@ -286,12 +313,16 @@ public class BlackjackController {
     if (dTotal > 21)
       d = 0;
 
-    if (p > d)
+    if (p > d) {
       result = 1;
-    else if (p < d)
+      uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), betChip * 2);// addBet
+    } else if (p < d) {
       result = -1;
-    else if (p == d)
+    } else if (p == d) {
       result = 2;
+      uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), betChip);// addBet
+    }
+    Userinfo user = uMapper.selectUserByName(loginUser);
 
     model.addAttribute("room_id", room_id);
     model.addAttribute("cards", cList);
@@ -301,8 +332,28 @@ public class BlackjackController {
 
     model.addAttribute("tmpdTotal", tmpdTotal);
     model.addAttribute("stand_flag", stand_flag);
-
+    model.addAttribute("user", user);
     model.addAttribute("result", result);
     return "blackjack.html";
+  }
+
+  // Bet
+  @PostMapping("/blackjack/{room_id}/bet")
+  public String BlackjackBet(Principal prin, @RequestParam Integer bet, @PathVariable Integer room_id, ModelMap model) {
+    if (bet <= 0) {
+      model.addAttribute("room_id", room_id);
+      return "blackjack.html";
+    }
+    betChip = bet;
+    String loginUser = prin.getName();
+
+    uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), -betChip);
+    Userinfo user = uMapper.selectUserByName(loginUser);
+
+    model.addAttribute("user", user);
+    model.addAttribute("room_id", room_id);
+    model.addAttribute("bet", betChip);
+    return "blackjack.html";
+
   }
 }
