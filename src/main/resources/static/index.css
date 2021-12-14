@@ -1,0 +1,7 @@
+.header{
+  /*文字の色をwhiteに変更*/
+  color: white;
+  /*背景の色をblackに変更*/
+  background-color: black;
+  padding: 10px;
+}
