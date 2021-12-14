@@ -10,7 +10,12 @@
   <div th:if=${room_id}>
     <h1>ルーム[[${room_id}]]へようこそ！！</h1>
   </div>
-  <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}">START</a>
+
+  <div th:if="${bet}">
+    賭けたチップ:[[${bet}]]<br>
+    <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}">START</a>
+  </div>
+
 
   <div th:if="${cards}">
     <p>プレイヤーの手札</p>
@@ -87,6 +92,19 @@
 
     </p-->
 
+  </div>
+  <div th:if="${user}">
+    ユーザー情報(仮設置)
+    ID:[[${user.user_id}]]
+    名前:"[[${user.username}]]"
+    持ちチップ:[[${user.chip}]]<br>
+  </div>
+
+  <div th:unless="${bet}">
+    <form th:action="@{/blackjack/{rid}/bet(rid=${room_id})}" method="post">
+      <input type="number" name="bet" required>
+      <input type="submit" value="ベット"><input type="reset" value="リセット">
+    </form>
   </div>
 
 </body>
