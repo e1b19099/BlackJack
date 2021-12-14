@@ -45,6 +45,11 @@ public class BlackjackController {
 
   int betChip = 0;
 
+  @GetMapping("/help")
+  public String help() {
+    return "help.html";
+  }
+
   @GetMapping("/room")
   public String Room01(ModelMap model) {
     ArrayList<Room> rooms = rMapper.selectAllRoom();
