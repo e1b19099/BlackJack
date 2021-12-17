@@ -1,1 +1,61 @@
-ルール説明
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <!--bootstrapでは実装が困難なときのためのcssファイル-->
+  <link rel="stylesheet" href="help.css">
+  <title>ルール説明</title>
+</head>
+
+<body>
+  <div>
+    <h1>ゲームの用語とルール説明</h1>
+    <h2>用語</h2>
+  </div>
+  <div>
+    <ul>
+      <li>ベットする</li>
+      →チップを任意の数賭けること
+      <li>ヒット</li>
+      →カードを一枚追加する宣言のこと
+      <li>スタンド</li>
+      →カードを追加しない宣言のこと
+      <li>バースト</li>
+      →カードの合計値が22以上になること
+    </ul>
+  </div>
+
+  <div>
+    <h2>ルール説明</h2>
+    <ol>
+      <li>プレイヤーたちは初期手札としてカードが２枚配られます。その時、ディーラーも同様に２枚配られますが、片方の手札は見えていない状態です。</li><br>
+      <li>プレイヤーはヒットかスタンドのどちらかを選択してください</li><br>
+      <li>2でスタンドを選べばプレイヤーのターンは終了し、ディーラーのターンに移ります</li><br>
+      <li>ディーラーのアクションはカードの合計値が16以下ならヒットをし、17以上ならスタンドします</li><br>
+      <li>
+        ディーラーがスタンドしたとき、プレイヤーとディーラーのカードの合計値を比べてディーラーよりもカードの合計値が高い、または合計値が21になればプレイヤーの勝ちだが、合計値が低いかバーストすると負けで、合計値が同じ、またはプレイヤーとディーラーがどちらもバーストした場合引き分けになります
+      </li><br>
+      <li>ゲームに勝てば賭けたチップの2倍獲得し、負ければチップが没収され、引き分けの場合は賭けたチップが戻ってきます</li>
+    </ol>
+  </div>
+  <div>
+    <p class="text-center"><a class="btn btn-sm btn-dark" href="/" role="button">タイトルへ</a></p>
+  </div>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
