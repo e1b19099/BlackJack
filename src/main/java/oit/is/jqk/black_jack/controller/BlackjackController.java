@@ -8,7 +8,6 @@ import java.util.Random;
 
 import javax.swing.UIManager;
 
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +23,8 @@ import oit.is.jqk.black_jack.model.Card;
 import oit.is.jqk.black_jack.model.CardMapper;
 import oit.is.jqk.black_jack.model.Room;
 import oit.is.jqk.black_jack.model.RoomMapper;
+import oit.is.jqk.black_jack.model.RoomUser;
+import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
 
@@ -38,6 +39,9 @@ public class BlackjackController {
 
   @Autowired
   UserinfoMapper uMapper;
+
+  @Autowired
+  RoomUserMapper ruMapper;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -84,7 +88,20 @@ public class BlackjackController {
   }
 
   @GetMapping("/blackjack/{room_id}")
-  public String Blackjack01(@PathVariable Integer room_id, ModelMap model) {
+  public String Blackjack01(Principal prin, @PathVariable Integer room_id, ModelMap model) {
+    Room room = rMapper.selectRoomById(room_id);
+    if (room == null) {
+      return "/error";
+    }
+    ArrayList<RoomUser> users = ruMapper.selectAllRoomUser();
+    Userinfo user = uMapper.selectUserByName(prin.getName());
+    for (RoomUser ru : users) {
+      if (ru.getUser_id() == user.getUser_id()) {
+        return "error_joined.html";
+      }
+    }
+
+    ruMapper.insertRoomUser(room_id, user.getUser_id());
     model.addAttribute("room_id", room_id);
     cList.clear();
     dList.clear();
