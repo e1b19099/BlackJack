@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import oit.is.jqk.black_jack.model.Card;
 import oit.is.jqk.black_jack.model.CardMapper;
+import oit.is.jqk.black_jack.model.DeckMapper;
 import oit.is.jqk.black_jack.model.Room;
 import oit.is.jqk.black_jack.model.RoomMapper;
 import oit.is.jqk.black_jack.model.RoomUser;
@@ -42,6 +43,9 @@ public class BlackjackController {
 
   @Autowired
   RoomUserMapper ruMapper;
+
+  @Autowired
+  DeckMapper dMapper;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -128,6 +132,7 @@ public class BlackjackController {
     deck = cmapper.selectAll();
     // デッキシャッフル
     Collections.shuffle(deck);
+    dMapper.bulkinsert(room_id, deck);
     int total = 0;
     boolean stand_flag = false;
     int dTotal = 0;// スタンド後の数字の合計

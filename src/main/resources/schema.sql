@@ -12,7 +12,7 @@ CREATE TABLE userinfo (
 CREATE TABLE room (
   room_id IDENTITY,
   room_name CHAR,
-  dealer_deal_id INT,
+  deck_id INT,
   date date,
   winner INT
 );
@@ -34,4 +34,12 @@ CREATE TABLE RoomUser (
   FOREIGN KEY (room_id) REFERENCES room(room_id),
   FOREIGN KEY (user_id) REFERENCES userinfo(user_id),
   FOREIGN KEY (deal_id) REFERENCES deal(deal_id)
+);
+
+CREATE TABLE Deck (
+  deck_id INT,
+  deal_card INT,
+  id INT,
+  PRIMARY KEY (deck_id,deal_card),
+  FOREIGN KEY (id) REFERENCES card(id)
 );
