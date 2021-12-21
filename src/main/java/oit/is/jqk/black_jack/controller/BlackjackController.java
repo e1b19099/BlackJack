@@ -8,7 +8,6 @@ import java.util.Random;
 
 import javax.swing.UIManager;
 
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +21,14 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import oit.is.jqk.black_jack.model.Card;
 import oit.is.jqk.black_jack.model.CardMapper;
+import oit.is.jqk.black_jack.model.Deal;
+import oit.is.jqk.black_jack.model.DealMapper;
+import oit.is.jqk.black_jack.model.Deck;
+import oit.is.jqk.black_jack.model.DeckMapper;
 import oit.is.jqk.black_jack.model.Room;
 import oit.is.jqk.black_jack.model.RoomMapper;
+import oit.is.jqk.black_jack.model.RoomUser;
+import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
 
@@ -38,6 +43,15 @@ public class BlackjackController {
 
   @Autowired
   UserinfoMapper uMapper;
+
+  @Autowired
+  RoomUserMapper ruMapper;
+
+  @Autowired
+  DeckMapper dMapper;
+
+  @Autowired
+  DealMapper dealMapper;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -56,6 +70,14 @@ public class BlackjackController {
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
+      for (Room cRoom : rooms) {
+        int member_count = ruMapper.selectRoomUserCount(cRoom.getRoom_id()) - 1;
+        if (member_count == -1) {
+          ruMapper.insertRoomUser(cRoom.getRoom_id(), 0);
+          member_count = ruMapper.selectRoomUserCount(cRoom.getRoom_id()) - 1;
+        }
+        cRoom.setCount(member_count);
+      }
       model.addAttribute("rooms", rooms);
     }
     return "room.html";
@@ -73,18 +95,40 @@ public class BlackjackController {
     long miliseconds = System.currentTimeMillis();
     Date date = new Date(miliseconds);
     room.setDate(date);
+    room.setLimits(count);
     rMapper.insertRoom(room);
     ArrayList<Room> rooms = rMapper.selectAllRoom();
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
+      for (Room cRoom : rooms) {
+        int member_count = ruMapper.selectRoomUserCount(cRoom.getRoom_id()) - 1;
+        if (member_count == -1) {
+          ruMapper.insertRoomUser(cRoom.getRoom_id(), 0);
+          member_count = ruMapper.selectRoomUserCount(cRoom.getRoom_id()) - 1;
+        }
+        cRoom.setCount(member_count);
+      }
       model.addAttribute("rooms", rooms);
     }
     return "room.html";
   }
 
   @GetMapping("/blackjack/{room_id}")
-  public String Blackjack01(@PathVariable Integer room_id, ModelMap model) {
+  public String Blackjack01(Principal prin, @PathVariable Integer room_id, ModelMap model) {
+    Room room = rMapper.selectRoomById(room_id);
+    if (room == null) {
+      return "/error";
+    }
+    ArrayList<RoomUser> users = ruMapper.selectRoomUserByRoomid(room_id);
+    Userinfo user = uMapper.selectUserByName(prin.getName());
+    for (RoomUser ru : users) {
+      if (ru.getUser_id() == user.getUser_id()) {
+        return "error_joined.html";
+      }
+    }
+
+    ruMapper.insertRoomUser(room_id, user.getUser_id());
     model.addAttribute("room_id", room_id);
     cList.clear();
     dList.clear();
@@ -102,15 +146,45 @@ public class BlackjackController {
     return "blackjack.html";
   }
 
+  @Transactional
+  public Card drawCard(int room_id) {
+    Deck deck = dMapper.selectDeckById(room_id);
+    int card_id = deck.getId();
+    dMapper.deleteDeckById(room_id, card_id);
+    Card getCard = cmapper.selectById(card_id);
+    return getCard;
+  }
+
+  public void dealUser(int room_id, int user_id, int card_id) {
+    RoomUser ruUser = ruMapper.selectRoomUserByAllId(room_id, user_id);
+    int deal_id = ruUser.getDeal_id();
+    ArrayList<Deal> deals = dealMapper.selectDealById(deal_id);
+    int max = 0;
+    if (deals != null) {
+      for (Deal deal : deals) {
+        if (max < deal.getDeal_number()) {
+          max = deal.getDeal_number();
+        }
+      }
+    }
+    Deal newDeal = new Deal();
+    newDeal.setDeal_id(deal_id);
+    newDeal.setDeal_number(max + 1);
+    newDeal.setId(card_id);
+    dealMapper.insertDeal(newDeal);
+  }
+
   @GetMapping("/blackjack/{room_id}/start")
-  public String Blackjack03(@PathVariable Integer room_id, ModelMap model) {
+  public String Blackjack03(Principal prin, @PathVariable Integer room_id, ModelMap model) {
     // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
     // ArrayList<Card> AddDCards = new ArrayList<>();
     cList.clear();
     dList.clear();
+    Userinfo ui = uMapper.selectUserByName(prin.getName());
     deck = cmapper.selectAll();
     // デッキシャッフル
     Collections.shuffle(deck);
+    dMapper.bulkinsert(room_id, deck);
     int total = 0;
     boolean stand_flag = false;
     int dTotal = 0;// スタンド後の数字の合計
@@ -121,11 +195,13 @@ public class BlackjackController {
       // Random rand = new Random();
       // int id = rand.nextInt(52) % 52 + 1;
       // Card card = cmapper.selectById(id);
-      Card card = deck.remove(0);
+      // Card card = deck.remove(0);
+      Card card = drawCard(room_id);
       int number = card.getNumber();
       if (number > 10)
         number = 10;
       total += number;
+      dealUser(room_id, ui.getUser_id(), card.getId());
       cList.add(card);
     }
     // ディーラーの処理
@@ -134,13 +210,15 @@ public class BlackjackController {
       // Random rand = new Random();
       // int id = rand.nextInt(52) % 52 + 1;
       // Card card = cmapper.selectById(id);
-      Card card = deck.remove(0);
+      // Card card = deck.remove(0);
+      Card card = drawCard(room_id);
       int number = card.getNumber();
       if (number > 10) {
         number = 10;
       }
       dTotal += number;
       dList.add(card);// dCardsをdListに変更_Z0413
+      dealUser(room_id, 0, card.getId());
       twodTotal = dTotal;
     }
     // ヒット処理を停止 playerHit
