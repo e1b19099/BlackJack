@@ -64,20 +64,31 @@ public class BlackjackController {
     return "help.html";
   }
 
+  /*
+   * ルームに所属しているメンバの数を引数として受け取った Roomリストに付属させて返却する。
+   *
+   * 引数:ArrayList<Room>
+   * 戻り値:ArrayList<Room>
+   */
+  public ArrayList<Room> countRoomMember(ArrayList<Room> rooms) {
+    for (Room cntRoom : rooms) {
+      int memberCount = ruMapper.selectRoomUserCount(cntRoom.getRoom_id()) - 1;
+      if (memberCount == -1) {
+        ruMapper.insertRoomUser(cntRoom.getRoom_id(), 0);
+        memberCount = ruMapper.selectRoomUserCount(cntRoom.getRoom_id()) - 1;
+      }
+      cntRoom.setCount(memberCount);
+    }
+    return rooms;
+  }
+
   @GetMapping("/room")
   public String Room01(ModelMap model) {
     ArrayList<Room> rooms = rMapper.selectAllRoom();
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
-      for (Room cntRoom : rooms) {
-        int memberCount = ruMapper.selectRoomUserCount(cntRoom.getRoom_id()) - 1;
-        if (memberCount == -1) {
-          ruMapper.insertRoomUser(cntRoom.getRoom_id(), 0);
-          memberCount = ruMapper.selectRoomUserCount(cntRoom.getRoom_id()) - 1;
-        }
-        cntRoom.setCount(memberCount);
-      }
+      rooms = countRoomMember(rooms);
       model.addAttribute("rooms", rooms);
     }
     return "room.html";
@@ -101,14 +112,7 @@ public class BlackjackController {
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
-      for (Room cntRoom : rooms) {
-        int memberCount = ruMapper.selectRoomUserCount(cntRoom.getRoom_id()) - 1;
-        if (memberCount == -1) {
-          ruMapper.insertRoomUser(cntRoom.getRoom_id(), 0);
-          memberCount = ruMapper.selectRoomUserCount(cntRoom.getRoom_id()) - 1;
-        }
-        cntRoom.setCount(memberCount);
-      }
+      rooms = countRoomMember(rooms);
       model.addAttribute("rooms", rooms);
     }
     return "room.html";
