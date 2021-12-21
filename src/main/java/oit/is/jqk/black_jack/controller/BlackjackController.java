@@ -181,10 +181,13 @@ public class BlackjackController {
     cList.clear();
     dList.clear();
     Userinfo ui = uMapper.selectUserByName(prin.getName());
-    deck = cmapper.selectAll();
-    // デッキシャッフル
-    Collections.shuffle(deck);
-    dMapper.bulkinsert(room_id, deck);
+
+    if (dMapper.selectDeckById(room_id) == null) {
+      deck = cmapper.selectAll();
+      // デッキシャッフル
+      Collections.shuffle(deck);
+      dMapper.bulkinsert(room_id, deck);
+    }
     int total = 0;
     boolean stand_flag = false;
     int dTotal = 0;// スタンド後の数字の合計
