@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Delete;
 
 @Mapper
 public interface RoomUserMapper {
@@ -23,5 +24,8 @@ public interface RoomUserMapper {
 
   @Select("SELECT count(*) from roomuser where room_id = #{id}")
   int selectRoomUserCount(int id);
+
+  @Delete("Delete from roomuser where room_id = #{room_id} and user_id =#{user_id} limit 1")
+  void deleteUserdata(int room_id, int user_id);
 
 }

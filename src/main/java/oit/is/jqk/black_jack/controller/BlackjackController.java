@@ -67,8 +67,7 @@ public class BlackjackController {
   /*
    * ルームに所属しているメンバの数を引数として受け取った Roomリストに付属させて返却する。
    *
-   * 引数:ArrayList<Room>
-   * 戻り値:ArrayList<Room>
+   * 引数:ArrayList<Room> 戻り値:ArrayList<Room>
    */
   public ArrayList<Room> countRoomMember(ArrayList<Room> rooms) {
     for (Room cntRoom : rooms) {
@@ -414,5 +413,12 @@ public class BlackjackController {
     model.addAttribute("bet", betChip);
     return "blackjack.html";
 
+  }
+
+  @GetMapping("/exit/{room_id}")
+  public String exit(@PathVariable Integer room_id, Principal prin) {
+    Userinfo exituser = uMapper.selectUserByName(prin.getName());
+    ruMapper.deleteUserdata(room_id, exituser.getUser_id());
+    return "exit.html";
   }
 }

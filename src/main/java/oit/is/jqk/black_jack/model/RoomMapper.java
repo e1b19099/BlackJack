@@ -18,4 +18,5 @@ public interface RoomMapper {
   @Insert("INSERT INTO room (room_name,limits,date,winner) VALUES (#{room_name},#{limits},#{date},#{winner});")
   @Options(useGeneratedKeys = true, keyColumn = "room_id", keyProperty = "room_id")
   void insertRoom(Room room);
+
 }

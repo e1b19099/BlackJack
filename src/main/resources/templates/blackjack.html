@@ -11,7 +11,7 @@
 
 <body>
   <div>
-    <p><a class="btn btn-sm btn-dark" href="/room" role="button">退室</a></p>
+    <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark" role="button">退室</a></p>
   </div>
   <div th:if=${room_id}>
     <h1>ルーム[[${room_id}]]へようこそ！！</h1>
