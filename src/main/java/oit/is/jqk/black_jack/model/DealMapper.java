@@ -10,8 +10,9 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface DealMapper {
 
+  @Insert("INSERT INTO deal (deal_id,deal_number,id) VALUES (#{deal_id},#{deal_number},#{id});")
+  void insertDeal(Deal deal);
 
-  @Insert("INSERT INTO deal (room_id,user_id,id) VALUES (#{room_id},#{user_id},#{id});")
-  @Options(useGeneratedKeys = true, keyColumn = "", keyProperty = "room_id")
-  void insertRoom(Room room);
+  @Select("SELECT * FROM deal where deal_id = #{deal_id}")
+  ArrayList<Deal> selectDealById(int deal_id);
 }

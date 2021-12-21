@@ -5,6 +5,25 @@ import java.sql.Date;
 public class Room {
   int room_id;
   String room_name;
+  int limits;
+  int count;
+
+  public int getLimits() {
+    return limits;
+  }
+
+  public void setLimits(int limits) {
+    this.limits = limits;
+  }
+
+  public int getCount() {
+    return count;
+  }
+
+  public void setCount(int count) {
+    this.count = count;
+  }
+
   Date date;
 
   int winner;
