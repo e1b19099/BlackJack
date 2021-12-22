@@ -6,20 +6,24 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <title>Document</title>
+
+  <!--bootstrapでは実装が困難なときのためのcssファイル-->
+  <link rel="stylesheet" href="/blackjack.css">
+
+  <title>Playing Game</title>
 </head>
 
 <body>
   <div>
-    <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark" role="button">退室</a></p>
+    <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark button" role="button">退室</a></p>
   </div>
   <div th:if=${room_id}>
-    <h1>ルーム[[${room_id}]]へようこそ！！</h1>
+    <h1 class="text-center welcome">ルーム[[${room_id}]]へようこそ！！</h1>
   </div>
 
-  <div th:if="${bet}">
+  <div class="text-center" th:if="${bet}">
     賭けたチップ:[[${bet}]]<br>
-    <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}">START</a>
+    <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}" class="btn btn-sm btn-dark marbutton" role="button">START</a>
   </div>
 
 
@@ -48,8 +52,6 @@
     <div th:if="${stand_flag}">
       スタンドしました
     </div>
-
-
   </div>
 
   <div th:if="${dCards}">
@@ -99,14 +101,15 @@
     </p-->
 
   </div>
-  <div th:if="${user}">
+  <div class="text-center" th:if="${user}">
     ユーザー情報(仮設置)
     ID:[[${user.user_id}]]
     名前:"[[${user.username}]]"
     持ちチップ:[[${user.chip}]]<br>
   </div>
 
-  <div th:unless="${bet}">
+  <div class="text-center" th:unless="${bet}">
+    チップを賭けてください(100チップまで可)
     <form th:action="@{/blackjack/{rid}/bet(rid=${room_id})}" method="post">
       <input type="number" name="bet" required>
       <input type="submit" value="ベット"><input type="reset" value="リセット">
