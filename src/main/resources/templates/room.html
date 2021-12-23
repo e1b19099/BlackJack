@@ -3,12 +3,19 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+  <!--bootstrapでは実装が困難なときのためのcssファイル-->
+  <link rel="stylesheet" href="/room.css">
   <title>ルーム選択</title>
 </head>
 
 <body>
-  <a href="/room/make">ルームを作成する</a>
-  <p>ルームを選択してください</p>
+  <h1 class="text-center">ルーム画面</h1>
+  <p class="text-center"><a class="btn btn-sm btn-dark" href="/room/make">ルームを作成する</a></p>
+  <p class="text-center">ルームを選択してください</p>
   <div th:if="${rooms}">
     <div th:each="room,stat:${rooms}">
       <tr>
@@ -16,8 +23,7 @@
         <td>ルーム名:[[${room.room_name}]]</td>
         <td>作成日:[[${room.date}]]</td>
         <td>人数[[${room.count}]]/[[${room.limits}]]</td>
-        <td><a th:href="@{/blackjack/{id}(id=${room.room_id})}">入室</a></td>
-
+        <td><a class="btn btn-sm btn-dark" th:href="@{/blackjack/{id}(id=${room.room_id})}">入室</a></td>
       </tr>
     </div>
   </div>
