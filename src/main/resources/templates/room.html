@@ -13,19 +13,28 @@
 </head>
 
 <body>
-  <h1 class="text-center">ルーム画面</h1>
+  <h1 class="text-center">ルーム選択画面</h1>
   <p class="text-center"><a class="btn btn-sm btn-dark" href="/room/make">ルームを作成する</a></p>
   <p class="text-center">ルームを選択してください</p>
   <div th:if="${rooms}">
-    <div th:each="room,stat:${rooms}">
+    <table class="table table-striped">
       <tr>
-        <td>ルーム番号:[[${room.room_id}]]</td>
-        <td>ルーム名:[[${room.room_name}]]</td>
-        <td>作成日:[[${room.date}]]</td>
-        <td>人数[[${room.count}]]/[[${room.limits}]]</td>
-        <td><a class="btn btn-sm btn-dark" th:href="@{/blackjack/{id}(id=${room.room_id})}">入室</a></td>
+        <th>ルーム番号</th>
+        <th>ルーム名</th>
+        <th>作成日</th>
+        <th>人数</th>
+        <th>入室</td>
       </tr>
-    </div>
+      <div th:each="room,stat:${rooms}">
+        <tr>
+          <td>[[${room.room_id}]]</td>
+          <td>[[${room.room_name}]]</td>
+          <td>[[${room.date}]]</td>
+          <td>[[${room.count}]]/[[${room.limits}]]</td>
+          <td><a class="btn btn-sm btn-dark" th:href="@{/blackjack/{id}(id=${room.room_id})}">入室</a></td>
+        </tr>
+      </div>
+    </table>
   </div>
   <div th:unless="${rooms}">
     <p>ルームが作成されていません。</p>
