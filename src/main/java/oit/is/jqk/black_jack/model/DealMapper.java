@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Delete;
 
 @Mapper
 public interface DealMapper {
@@ -15,4 +16,7 @@ public interface DealMapper {
 
   @Select("SELECT * FROM deal where deal_id = #{deal_id}")
   ArrayList<Deal> selectDealById(int deal_id);
+
+  @Delete("DELETE FROM Deal where deal_id = #{deal_id}")
+  void deleteUserDeal(int deal_id);
 }

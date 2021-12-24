@@ -418,6 +418,8 @@ public class BlackjackController {
   @GetMapping("/exit/{room_id}")
   public String exit(@PathVariable Integer room_id, Principal prin) {
     Userinfo exituser = uMapper.selectUserByName(prin.getName());
+    RoomUser roomuser = ruMapper.selectRoomUserByAllId(room_id, exituser.getUser_id());
+    dealMapper.deleteUserDeal(roomuser.getDeal_id());
     ruMapper.deleteUserdata(room_id, exituser.getUser_id());
     return "exit.html";
   }
