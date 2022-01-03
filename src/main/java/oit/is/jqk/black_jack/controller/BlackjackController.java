@@ -31,6 +31,7 @@ import oit.is.jqk.black_jack.model.RoomUser;
 import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
+import oit.is.jqk.black_jack.service.AsyncCountFruit56;
 
 @Controller
 @RequestMapping("/")
@@ -52,6 +53,9 @@ public class BlackjackController {
 
   @Autowired
   DealMapper dealMapper;
+
+  @Autowired
+  private AsyncCountFruit56 ac56;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -422,5 +426,16 @@ public class BlackjackController {
     dealMapper.deleteUserDeal(roomuser.getDeal_id());
     ruMapper.deleteUserdata(room_id, exituser.getUser_id());
     return "exit.html";
+  }
+
+  @GetMapping("/sample56/step1")
+  public SseEmitter pushCount() {
+    // infoレベルでログを出力する
+
+    // push処理の秘密兵器．これを利用してブラウザにpushする
+    // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
+    final SseEmitter sseEmitter = new SseEmitter();
+    this.ac56.count(sseEmitter);
+    return sseEmitter;
   }
 }
