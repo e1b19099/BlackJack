@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Delete;
 
 @Mapper
 public interface RoomUserMapper {
+
   @Select("SELECT * from roomuser;")
   ArrayList<RoomUser> selectAllRoomUser();
 

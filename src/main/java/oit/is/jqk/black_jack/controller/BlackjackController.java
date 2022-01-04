@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import javax.swing.UIManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +30,7 @@ import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
 import oit.is.jqk.black_jack.service.AsyncCountFruit56;
+import oit.is.jqk.black_jack.service.AsyncShopService57;
 
 @Controller
 @RequestMapping("/")
@@ -56,6 +55,9 @@ public class BlackjackController {
 
   @Autowired
   private AsyncCountFruit56 ac56;
+
+  @Autowired
+  private AsyncShopService57 as57;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -436,6 +438,18 @@ public class BlackjackController {
     // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
     final SseEmitter sseEmitter = new SseEmitter();
     this.ac56.count(sseEmitter);
+    return sseEmitter;
+  }
+
+  @GetMapping("/sample57/step2/{room_id}")
+  public SseEmitter pushRoomList(@PathVariable Integer room_id, Principal prin) {
+    Userinfo ui = uMapper.selectUserByName(prin.getName());
+    // infoレベルでログを出力する
+
+    // push処理の秘密兵器．これを利用してブラウザにpushする
+    // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
+    final SseEmitter sseEmitter = new SseEmitter();
+    this.as57.asyncShowFruitsList(sseEmitter, room_id, ui.getUser_id());
     return sseEmitter;
   }
 }

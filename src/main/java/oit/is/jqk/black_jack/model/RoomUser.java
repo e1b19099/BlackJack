@@ -5,6 +5,16 @@ public class RoomUser extends Userinfo {
   int user_id;
   int deal_id;
 
+  public RoomUser() {
+
+  }
+
+  public RoomUser(RoomUser roomUser) {
+    this.room_id = roomUser.getRoom_id();
+    this.user_id = roomUser.getUser_id();
+    this.deal_id = roomUser.getDeal_id();
+  }
+
   public int getRoom_id() {
     return room_id;
   }
