@@ -14,13 +14,13 @@ public interface RoomUserMapper {
   @Select("SELECT * from roomuser;")
   ArrayList<RoomUser> selectAllRoomUser();
 
-  @Select("SELECT * from roomuser where room_id = #{id}")
+  @Select("SELECT * from roomuser where room_id = #{id} order by time")
   ArrayList<RoomUser> selectRoomUserByRoomid(int id);
 
   @Select("SELECT * from roomuser where room_id = #{room_id} and user_id = #{user_id}")
   RoomUser selectRoomUserByAllId(int room_id, int user_id);
 
-  @Insert("INSERT INTO roomuser (room_id,user_id) values (#{room_id}, #{user_id})")
+  @Insert("INSERT INTO roomuser (room_id,user_id,time) values (#{room_id}, #{user_id}, now())")
   void insertRoomUser(int room_id, int user_id);
 
   @Select("SELECT count(*) from roomuser where room_id = #{id}")

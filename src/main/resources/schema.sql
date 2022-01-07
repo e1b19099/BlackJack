@@ -15,13 +15,15 @@ CREATE TABLE room (
   limits INT,
   deck_id INT,
   date date,
-  winner INT
+  winner INT,
+  turn INT default(0)
 );
 
 CREATE TABLE RoomUser (
   room_id INT,
   user_id INT,
   deal_id INT AUTO_INCREMENT,
+  time timestamp,
   PRIMARY KEY (room_id,user_id),
   FOREIGN KEY (room_id) REFERENCES room(room_id),
   FOREIGN KEY (user_id) REFERENCES userinfo(user_id)

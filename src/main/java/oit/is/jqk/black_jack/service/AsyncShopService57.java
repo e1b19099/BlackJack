@@ -1,6 +1,9 @@
 package oit.is.jqk.black_jack.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -96,7 +99,12 @@ public class AsyncShopService57 {
         } else {
           myroom.setLimit(true);
         }
-        emitter.send(myroom, MediaType.APPLICATION_JSON);
+        ArrayList<Object> sendObj = new ArrayList<>();
+        sendObj.add(myroom);
+        Map<String, String> status = new HashMap<String, String>();
+        status.put("turn", "1");
+        sendObj.add(status);
+        emitter.send(sendObj, MediaType.APPLICATION_JSON);
         TimeUnit.MILLISECONDS.sleep(1000);
         // dbUpdated = false;
       }

@@ -19,4 +19,6 @@ public interface DealMapper {
 
   @Delete("DELETE FROM Deal where deal_id = #{deal_id}")
   void deleteUserDeal(int deal_id);
+
+  
 }
