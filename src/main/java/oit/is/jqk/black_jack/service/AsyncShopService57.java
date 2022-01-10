@@ -24,6 +24,8 @@ import oit.is.jqk.black_jack.model.Room;
 import oit.is.jqk.black_jack.model.RoomMapper;
 import oit.is.jqk.black_jack.model.RoomUser;
 import oit.is.jqk.black_jack.model.RoomUserMapper;
+import oit.is.jqk.black_jack.model.Userinfo;
+import oit.is.jqk.black_jack.model.UserinfoMapper;
 
 @Service
 public class AsyncShopService57 {
@@ -42,6 +44,9 @@ public class AsyncShopService57 {
 
   @Autowired
   DeckMapper deckMapper;
+
+  @Autowired
+  UserinfoMapper userinfoMapper;
 
   /**
    * 購入対象の果物IDの果物をDBから削除し，購入対象の果物オブジェクトを返す
@@ -68,8 +73,10 @@ public class AsyncShopService57 {
     ArrayList<Members> members = new ArrayList<>();
     for (RoomUser roomuser : ru) {
       Members member = new Members(roomuser);
+      Userinfo ui = userinfoMapper.selectUserById(member.getUser_id());
       ArrayList<Deal> deal = dealMapper.selectDealById(member.getDeal_id());
       member.setDeals(deal);
+      member.setName(ui.getUsername());
       members.add(member);
     }
     myroom.setMembers(members);

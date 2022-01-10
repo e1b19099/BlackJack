@@ -4,6 +4,15 @@ import java.util.ArrayList;
 
 public class Members extends RoomUser {
   ArrayList<Deal> deals;
+  String name;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public Members(RoomUser roomUser) {
     super(roomUser);

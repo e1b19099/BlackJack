@@ -16,8 +16,16 @@
 
       var sse = new EventSource('/blackjack/status/' + [[${ room_id }]]);
       sse.onmessage = function (event) {
-        console.log(event.data);
+        room = JSON.parse(event.data);
+        console.log(room);
+        let members = room[0].members;
+        console.log(members);
+        members.forEach(function (key) {
+          console.log(key);
+        });
+        console.log(members);
         document.getElementById("p1").textContent = event.data;
+
       }
     }
   </script>
