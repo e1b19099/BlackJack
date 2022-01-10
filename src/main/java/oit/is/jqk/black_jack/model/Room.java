@@ -8,6 +8,17 @@ public class Room {
   int limits;
   int count;
 
+  public Room() {
+
+  }
+
+  public Room(Room room) {
+    this.room_id = room.getRoom_id();
+    this.room_name = room.getRoom_name();
+    this.limits = room.getLimits();
+    this.count = room.getCount();
+  }
+
   public int getLimits() {
     return limits;
   }

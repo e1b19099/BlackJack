@@ -11,9 +11,28 @@
   <link rel="stylesheet" href="/blackjack.css">
 
   <title>Playing Game</title>
+  <script>
+    window.onload = function () {
+
+      var sse = new EventSource('/blackjack/status/' + [[${ room_id }]]);
+      sse.onmessage = function (event) {
+        room = JSON.parse(event.data);
+        console.log(room);
+        let members = room[0].members;
+        console.log(members);
+        members.forEach(function (key) {
+          console.log(key);
+        });
+        console.log(members);
+        document.getElementById("p1").textContent = event.data;
+
+      }
+    }
+  </script>
 </head>
 
 <body>
+  <div id="p1"></div>
   <div>
     <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark button" role="button">退室</a></p>
   </div>
@@ -30,9 +49,7 @@
   <div class="text-center" th:if="${cards}">
     <h2 class="player">プレイヤーの手札</h2>
     <div th:each="card,stat:${cards}">
-      ID:[[${card.id}]]
-      マーク:"[[${card.suit}]]"
-      番号:"[[${card.number}]]"
+      <img height="100px" th:src="@{${'/tramp/' + card.id + '.jpg'}}" alt="" />
     </div>
     <div>
       合計:[[${total}]]
@@ -58,11 +75,9 @@
     <h2 class="dealer">ディーラーの手札</h2>
     <div th:each="card,stat:${dCards}">
       <p th:if="${stand_flag == true || stat.count gt 1}">
-        ID:[[${card.id}]]
-        マーク:"[[${card.suit}]]"
-        番号:"[[${card.number}]]"</p>
+        <img height="100px" th:src="@{${'/tramp/' + card.id + '.jpg'}}" alt="" />
       <p th:if="${stand_flag == false && stat.first}">
-        ID:??マーク:?????番号:??
+        <img height="100px" src="/tramp/53.jpg" alt="" />
       </p>
     </div>
     <div>
@@ -78,9 +93,7 @@
   <div class="text-center" th:if="${AddDCards}">
     <div th:each="card2,stat:${AddDCards}">
       トランプの数字の合計が16以下なのでヒットします<br>
-      ID:[[${card2.id}]]
-      マーク:"[[${card2.suit}]]"
-      番号:"[[${card2.number}]]"
+      <img height="100px" th:src="@{${'/tramp/' + card2.id + '.jpg'}}" alt="" />
     </div>
     トランプの数字の合計が17以上なのでスタンドします<br>
     スタンド後の合計:[[${dTotal}]]

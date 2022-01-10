@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import javax.swing.UIManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +29,8 @@ import oit.is.jqk.black_jack.model.RoomUser;
 import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
+import oit.is.jqk.black_jack.service.AsyncCountFruit56;
+import oit.is.jqk.black_jack.service.AsyncShopService57;
 
 @Controller
 @RequestMapping("/")
@@ -52,6 +52,12 @@ public class BlackjackController {
 
   @Autowired
   DealMapper dealMapper;
+
+  @Autowired
+  private AsyncCountFruit56 ac56;
+
+  @Autowired
+  private AsyncShopService57 as57;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -117,27 +123,6 @@ public class BlackjackController {
     return "room.html";
   }
 
-  @GetMapping("/blackjack/{room_id}")
-  public String Blackjack01(Principal prin, @PathVariable Integer room_id, ModelMap model) {
-    Room room = rMapper.selectRoomById(room_id);
-    if (room == null) {
-      return "/error";
-    }
-    ArrayList<RoomUser> users = ruMapper.selectRoomUserByRoomid(room_id);
-    Userinfo user = uMapper.selectUserByName(prin.getName());
-    for (RoomUser ru : users) {
-      if (ru.getUser_id() == user.getUser_id()) {
-        return "error_joined.html";
-      }
-    }
-
-    ruMapper.insertRoomUser(room_id, user.getUser_id());
-    model.addAttribute("room_id", room_id);
-    cList.clear();
-    dList.clear();
-    return "blackjack.html";
-  }
-
   @GetMapping("/blackjack/{room_id}/draw")
   public String Blackjack02(@PathVariable Integer room_id, ModelMap model) {
     Random rand = new Random();
@@ -177,14 +162,82 @@ public class BlackjackController {
     dealMapper.insertDeal(newDeal);
   }
 
+  // Bet
+  @PostMapping("/blackjack/{room_id}/bet")
+  public String BlackjackBet(Principal prin, @RequestParam Integer bet, @PathVariable Integer room_id, ModelMap model) {
+    if (bet <= 0) {
+      model.addAttribute("room_id", room_id);
+      return "blackjack.html";
+    }
+    betChip = bet;
+    String loginUser = prin.getName();
+
+    uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), -betChip);
+    Userinfo user = uMapper.selectUserByName(loginUser);
+
+    model.addAttribute("user", user);
+    model.addAttribute("room_id", room_id);
+    model.addAttribute("bet", betChip);
+    return "blackjack.html";
+
+  }
+
+  @GetMapping("/exit/{room_id}")
+  public String exit(@PathVariable Integer room_id, Principal prin) {
+    Userinfo exituser = uMapper.selectUserByName(prin.getName());
+    RoomUser roomuser = ruMapper.selectRoomUserByAllId(room_id, exituser.getUser_id());
+    dealMapper.deleteUserDeal(roomuser.getDeal_id());
+    ruMapper.deleteUserdata(room_id, exituser.getUser_id());
+    return "exit.html";
+  }
+
+  @GetMapping("/sample56/step1")
+  public SseEmitter pushCount() {
+    // infoレベルでログを出力する
+
+    // push処理の秘密兵器．これを利用してブラウザにpushする
+    // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
+    final SseEmitter sseEmitter = new SseEmitter();
+    this.ac56.count(sseEmitter);
+    return sseEmitter;
+  }
+
+  @GetMapping("/blackjack/{room_id}")
+  public String Blackjack01(Principal prin, @PathVariable Integer room_id, ModelMap model) {
+    boolean isEntering = false;
+    Room room = rMapper.selectRoomById(room_id);
+    if (room == null) {
+      return "/error";
+    }
+    ArrayList<RoomUser> users = ruMapper.selectRoomUserByRoomid(room_id);
+    Userinfo user = uMapper.selectUserByName(prin.getName());
+    for (RoomUser ru : users) {
+      if (ru.getUser_id() == user.getUser_id()) {
+        // return "error_joined.html";
+        isEntering = true;
+      }
+    }
+    if (isEntering == false) {
+      ruMapper.insertRoomUser(room_id, user.getUser_id());
+    }
+    model.addAttribute("room_id", room_id);
+    cList.clear();
+    dList.clear();
+    return "blackjack.html";
+  }
+
   @GetMapping("/blackjack/{room_id}/start")
   public String Blackjack03(Principal prin, @PathVariable Integer room_id, ModelMap model) {
     // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
     // ArrayList<Card> AddDCards = new ArrayList<>();
     cList.clear();
     dList.clear();
-    Userinfo ui = uMapper.selectUserByName(prin.getName());
 
+    Userinfo ui = uMapper.selectUserByName(prin.getName());
+    RoomUser ru = ruMapper.selectRoomUserByAllId(room_id, ui.getUser_id());
+    RoomUser dealer = ruMapper.selectRoomUserByAllId(room_id, 0);
+    dealMapper.deleteUserDeal(ru.getDeal_id());
+    dealMapper.deleteUserDeal(dealer.getDeal_id());
     if (deckMapper.selectDeckById(room_id) == null) {
       deck = cmapper.selectAll();
       // デッキシャッフル
@@ -255,7 +308,8 @@ public class BlackjackController {
       total += number;
     }
 
-    Card Hitcard = deck.remove(0);
+    // Card Hitcard = deck.remove(0);
+    Card Hitcard = drawCard(room_id);
     int hitNumber = Hitcard.getNumber();
     if (hitNumber > 10) {
       hitNumber = 10;
@@ -395,32 +449,15 @@ public class BlackjackController {
     return "blackjack.html";
   }
 
-  // Bet
-  @PostMapping("/blackjack/{room_id}/bet")
-  public String BlackjackBet(Principal prin, @RequestParam Integer bet, @PathVariable Integer room_id, ModelMap model) {
-    if (bet <= 0) {
-      model.addAttribute("room_id", room_id);
-      return "blackjack.html";
-    }
-    betChip = bet;
-    String loginUser = prin.getName();
+  @GetMapping("/blackjack/status/{room_id}")
+  public SseEmitter pushRoomList(@PathVariable Integer room_id, Principal prin) {
+    Userinfo ui = uMapper.selectUserByName(prin.getName());
+    // infoレベルでログを出力する
 
-    uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), -betChip);
-    Userinfo user = uMapper.selectUserByName(loginUser);
-
-    model.addAttribute("user", user);
-    model.addAttribute("room_id", room_id);
-    model.addAttribute("bet", betChip);
-    return "blackjack.html";
-
-  }
-
-  @GetMapping("/exit/{room_id}")
-  public String exit(@PathVariable Integer room_id, Principal prin) {
-    Userinfo exituser = uMapper.selectUserByName(prin.getName());
-    RoomUser roomuser = ruMapper.selectRoomUserByAllId(room_id, exituser.getUser_id());
-    dealMapper.deleteUserDeal(roomuser.getDeal_id());
-    ruMapper.deleteUserdata(room_id, exituser.getUser_id());
-    return "exit.html";
+    // push処理の秘密兵器．これを利用してブラウザにpushする
+    // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
+    final SseEmitter sseEmitter = new SseEmitter();
+    this.as57.asyncShowFruitsList(sseEmitter, room_id, ui.getUser_id());
+    return sseEmitter;
   }
 }

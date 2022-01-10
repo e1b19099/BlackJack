@@ -45,6 +45,7 @@ public class BlackJackAuthConfiguration extends WebSecurityConfigurerAdapter {
     // authenticated()の代わりにpermitAll()と書くと認証処理が不要であることを示す
     http.authorizeRequests().antMatchers("/room").authenticated();
     http.authorizeRequests().antMatchers("/blackjack").authenticated();
+    http.authorizeRequests().antMatchers("/sample2.html").authenticated();
 
     // Spring Securityの機能を利用してログアウト．ログアウト時は http://localhost:8000/ に戻る
     http.logout().logoutSuccessUrl("/");
