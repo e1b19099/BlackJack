@@ -27,3 +27,27 @@ form{
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.player{
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  color: white;
+  /*背景の色をblackに変更*/
+  background-color: blue;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.dealer{
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+    color: white;
+  /*背景の色をblackに変更*/
+  background-color: red;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.largefont{
+  font-size: 28px;
+}
