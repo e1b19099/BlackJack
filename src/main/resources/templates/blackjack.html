@@ -27,8 +27,8 @@
   </div>
 
 
-  <div th:if="${cards}">
-    <p>プレイヤーの手札</p>
+  <div class="text-center" th:if="${cards}">
+    <h2 class="player">プレイヤーの手札</h2>
     <div th:each="card,stat:${cards}">
       ID:[[${card.id}]]
       マーク:"[[${card.suit}]]"
@@ -54,8 +54,8 @@
     </div>
   </div>
 
-  <div th:if="${dCards}">
-    <p>ディーラーの手札</p>
+  <div class="text-center" th:if="${dCards}">
+    <h2 class="dealer">ディーラーの手札</h2>
     <div th:each="card,stat:${dCards}">
       <p th:if="${stand_flag == true || stat.count gt 1}">
         ID:[[${card.id}]]
@@ -75,7 +75,7 @@
     </div>
   </div>
 
-  <div th:if="${AddDCards}">
+  <div class="text-center" th:if="${AddDCards}">
     <div th:each="card2,stat:${AddDCards}">
       トランプの数字の合計が16以下なのでヒットします<br>
       ID:[[${card2.id}]]
@@ -86,7 +86,7 @@
     スタンド後の合計:[[${dTotal}]]
   </div>
 
-  <div th:switch="${result}">
+  <div class="largefont text-center" th:switch="${result}">
     <p th:case=1>
       Win!
     </p>
@@ -111,11 +111,15 @@
   <div class="text-center" th:unless="${bet}">
     チップを賭けてください(100チップまで可)
     <form th:action="@{/blackjack/{rid}/bet(rid=${room_id})}" method="post">
-      <input type="number" name="bet" required>
-      <input type="submit" value="ベット"><input type="reset" value="リセット">
+      <input type="number" name="bet" id="check" required>
+      <input type="submit" value="ベット" onclick="betcontrol()"><input type="reset" value="リセット">
     </form>
   </div>
-
+  <!-- JavaScriptを読み込む // -->
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+    integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+  <script src="/blackjack.js"></script>
+  <!-- // JavaScriptを読み込む  -->
 </body>
 
 </html>
