@@ -162,10 +162,32 @@ public class BlackjackController {
     dealMapper.insertDeal(newDeal);
   }
 
+  // 手札の合計
+  public int sumHand(ArrayList<Card> List) {
+    int total = 0;
+    int countAce = 0;
+    for (Card card : cList) {
+      int number = card.getNumber();
+      if (number > 10)
+        number = 10;
+      if (number == 1) {
+        number = 11;
+        countAce += 1;
+      }
+      total += number;
+    }
+    while (total > 21 && countAce > 0) {
+      total -= 10;
+      countAce -= 1;
+    }
+
+    return total;
+  }
+
   // Bet
   @PostMapping("/blackjack/{room_id}/bet")
   public String BlackjackBet(Principal prin, @RequestParam Integer bet, @PathVariable Integer room_id, ModelMap model) {
-    if (bet <= 0) {
+    if (bet <= 0 || bet > 100) {
       model.addAttribute("room_id", room_id);
       return "blackjack.html";
     }
@@ -226,6 +248,7 @@ public class BlackjackController {
     return "blackjack.html";
   }
 
+  // START
   @GetMapping("/blackjack/{room_id}/start")
   public String Blackjack03(Principal prin, @PathVariable Integer room_id, ModelMap model) {
     // ArrayList<Card> dCards = new ArrayList<>(); //playerHit
@@ -255,6 +278,8 @@ public class BlackjackController {
       int number = card.getNumber();
       if (number > 10)
         number = 10;
+      if (number == 1)
+        number = 11; // addPlayerAce
       total += number;
       dealUser(room_id, ui.getUser_id(), card.getId());
       cList.add(card);
@@ -300,22 +325,14 @@ public class BlackjackController {
     String loginUser = prin.getName();
 
     // プレイヤーの処理
-    // Hit前の手札の合計
-    for (Card card : cList) {
-      int number = card.getNumber();
-      if (number > 10)
-        number = 10;
-      total += number;
-    }
 
+    // カード追加
     // Card Hitcard = deck.remove(0);
     Card Hitcard = drawCard(room_id);
-    int hitNumber = Hitcard.getNumber();
-    if (hitNumber > 10) {
-      hitNumber = 10;
-    }
-    total += hitNumber;
     cList.add(Hitcard);
+
+    // Hit後の手札の合計
+    total = sumHand(cList);
 
     // ディーラーの処理
     // 初期手札の合計
@@ -331,7 +348,8 @@ public class BlackjackController {
       stand_flag = true;
       // ヒット処理
       while (dTotal <= 16) {
-        Card Addcard = deck.remove(0);
+        // Card Addcard = deck.remove(0);
+        Card Addcard = drawCard(room_id);
         int number2 = Addcard.getNumber();
         if (number2 > 10) {
           number2 = 10;
@@ -386,13 +404,8 @@ public class BlackjackController {
     boolean stand_flag = true;
     String loginUser = prin.getName();// ユーザ名取得
 
-    // プレイヤーの初期手札の内容取得
-    for (Card card : cList) {
-      int number = card.getNumber();
-      if (number > 10)
-        number = 10;
-      total += number;
-    }
+    // プレイヤーの手札の合計
+    total = sumHand(cList);
 
     // ディーラーの処理
     // 初期手札の合計
@@ -407,7 +420,8 @@ public class BlackjackController {
 
     // ヒット処理
     while (dTotal <= 16) {
-      Card Addcard = deck.remove(0);
+      // Card Addcard = deck.remove(0);
+      Card Addcard = drawCard(room_id);
       int number2 = Addcard.getNumber();
       if (number2 > 10) {
         number2 = 10;
