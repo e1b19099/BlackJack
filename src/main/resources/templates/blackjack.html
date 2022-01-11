@@ -12,6 +12,14 @@
 
   <title>Playing Game</title>
   <script>
+    let update_card;
+
+    function waitScreen() {
+      let waitScreen = document.getElementById("wait_screen");
+      let button = document.getElementById("disableButton");
+      waitScreen.classList.add("disable");
+    }
+
     window.onload = function () {
 
       var sse = new EventSource('/blackjack/status/' + [[${ room_id }]]);
@@ -20,18 +28,30 @@
         console.log(room);
         let members = room[0].members;
         console.log(members);
+        let dealer = members[0];
         members.forEach(function (key) {
           console.log(key);
         });
         console.log(members);
         document.getElementById("p1").textContent = event.data;
+        //document.getElementById("player_card").innerHTML = "<img src='/tramp/" + members[1].deals[0].id + ".jpg'/> ";
+
+
+
 
       }
     }
+    waitScreen();
   </script>
 </head>
 
 <body>
+  <div id="wait_screen">
+
+    <p class="text-center">メンバーが集まるのを待っています</p>
+    <input id="disableButton" type="button" onclick="waitScreen();" value="非表示" />
+  </div>
+
   <div id="p1"></div>
   <div>
     <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark button" role="button">退室</a></p>

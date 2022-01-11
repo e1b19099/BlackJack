@@ -1,9 +1,6 @@
 package oit.is.jqk.black_jack.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -28,10 +25,11 @@ import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
 
 @Service
-public class AsyncShopService57 {
+public class AsyncBlackJack {
   boolean dbUpdated = false;
+  boolean noLimit = false;
 
-  private final Logger logger = LoggerFactory.getLogger(AsyncShopService57.class);
+  private final Logger logger = LoggerFactory.getLogger(AsyncBlackJack.class);
 
   @Autowired
   RoomMapper roomMapper;
@@ -48,27 +46,11 @@ public class AsyncShopService57 {
   @Autowired
   UserinfoMapper userinfoMapper;
 
-  /**
-   * 購入対象の果物IDの果物をDBから削除し，購入対象の果物オブジェクトを返す
-   *
-   * @param id 購入対象の果物のID
-   * @return 購入対象の果物のオブジェクトを返す
-   */
-  /*
-   * @Transactional public Fruit syncBuyFruits(int id) { // 削除対象のフルーツを取得 Fruit
-   * fruit = fMapper.selectById(id);
-   *
-   * // 削除 fMapper.deleteById(id);
-   *
-   * // 非同期でDB更新したことを共有する際に利用する this.dbUpdated = true;
-   *
-   * return fruit; }
-   */
   @Transactional
   public MyRoom selectMyRoom(int room_id) {
-    Room fruits7 = roomMapper.selectRoomById(room_id);
+    Room room = roomMapper.selectRoomById(room_id);
 
-    MyRoom myroom = new MyRoom(fruits7);
+    MyRoom myroom = new MyRoom(room);
     ArrayList<RoomUser> ru = roomUserMapper.selectRoomUserByRoomid(room_id);
     ArrayList<Members> members = new ArrayList<>();
     for (RoomUser roomuser : ru) {
@@ -83,13 +65,33 @@ public class AsyncShopService57 {
     return myroom;
   }
 
+  @Transactional
+  public void updateTurn(int room_id) {
+    Room room = roomMapper.selectRoomById(room_id);
+    int turn = room.getTurn();
+    room.setTurn(turn + 1);
+    roomMapper.updateTurnById(room);
+  }
+
+  public void init(int room_id) {
+    updateTurn(room_id);
+  }
+
+  public void stand(int room_id) {
+    updateTurn(room_id);
+  }
+
+  public void forcedStart() {
+    noLimit = true;
+  }
+
   /**
    * dbUpdatedがtrueのときのみブラウザにDBからフルーツリストを取得して送付する
    *
    * @param emitter
    */
   @Async
-  public void asyncShowFruitsList(SseEmitter emitter, int room_id, int user_id) {
+  public void asyncShowBlackJack(SseEmitter emitter, int room_id, int user_id) {
     dbUpdated = true;
     try {
       while (true) {// 無限ループ
@@ -98,19 +100,16 @@ public class AsyncShopService57 {
           TimeUnit.MILLISECONDS.sleep(500);
           continue;
         }
-        // DBが更新されていれば更新後のフルーツリストを取得してsendし，1s休み，dbUpdatedをfalseにする
         MyRoom myroom = selectMyRoom(room_id);
         ArrayList<Members> members = myroom.getMembers();
-        if (myroom.getLimits() > members.size() - 1) {
+        if (myroom.getLimits() > members.size() - 1 || noLimit == true) {
           myroom.setLimit(false);
         } else {
           myroom.setLimit(true);
+          noLimit = false;
         }
         ArrayList<Object> sendObj = new ArrayList<>();
         sendObj.add(myroom);
-        Map<String, String> status = new HashMap<String, String>();
-        status.put("turn", "1");
-        sendObj.add(status);
         emitter.send(sendObj, MediaType.APPLICATION_JSON);
         TimeUnit.MILLISECONDS.sleep(1000);
         // dbUpdated = false;
@@ -121,7 +120,7 @@ public class AsyncShopService57 {
     } finally {
       // emitter.complete();
     }
-    System.out.println("asyncShowFruitsList complete");
+    System.out.println("asyncBlackJack complete");
   }
 
 }

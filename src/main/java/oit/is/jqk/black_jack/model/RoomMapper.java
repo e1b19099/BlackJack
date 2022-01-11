@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface RoomMapper {
@@ -18,5 +19,8 @@ public interface RoomMapper {
   @Insert("INSERT INTO room (room_name,limits,date,winner) VALUES (#{room_name},#{limits},#{date},#{winner});")
   @Options(useGeneratedKeys = true, keyColumn = "room_id", keyProperty = "room_id")
   void insertRoom(Room room);
+
+  @Update("UPDATE ROOM SET TURN=#{turn} WHERE ID = #{ROOM_ID}")
+  void updateTurnById(Room room);
 
 }
