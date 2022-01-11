@@ -52,6 +52,7 @@ form{
   font-size: 28px;
 }
 
+
 #wait_screen{
   width:100%;
   height:100%;
@@ -70,4 +71,13 @@ form{
 #wait_screen.disable{
   display: none;
   z-index: -100;
+}
+.card{
+  float: left;
+  margin: 10px;
+}
+
+.delfloat
+{
+  clear: both;
 }
