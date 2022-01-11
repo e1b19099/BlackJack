@@ -48,10 +48,10 @@
 
   <div class="text-center" th:if="${cards}">
     <h2 class="player">プレイヤーの手札</h2>
-    <div th:each="card,stat:${cards}">
+    <div class="card" th:each="card,stat:${cards}">
       <img height="100px" th:src="@{${'/tramp/' + card.id + '.jpg'}}" alt="" />
     </div>
-    <div>
+    <div class="delfloat">
       合計:[[${total}]]
     </div>
     <!--スタンド時にボタンが非表示に-->
@@ -73,30 +73,23 @@
 
   <div class="text-center" th:if="${dCards}">
     <h2 class="dealer">ディーラーの手札</h2>
-    <div th:each="card,stat:${dCards}">
+    <div class="card" th:each="card,stat:${dCards}">
       <p th:if="${stand_flag == true || stat.count gt 1}">
         <img height="100px" th:src="@{${'/tramp/' + card.id + '.jpg'}}" alt="" />
       <p th:if="${stand_flag == false && stat.first}">
         <img height="100px" src="/tramp/53.jpg" alt="" />
       </p>
     </div>
-    <div>
-      <p th:if="${stand_flag}">
-        引く前の合計:[[${tmpdTotal}]]
-      </p>
-      <p th:unless="${stand_flag}">
-        引く前の合計:?????
-      </p>
-    </div>
   </div>
 
   <div class="text-center" th:if="${AddDCards}">
     <div th:each="card2,stat:${AddDCards}">
-      トランプの数字の合計が16以下なのでヒットします<br>
-      <img height="100px" th:src="@{${'/tramp/' + card2.id + '.jpg'}}" alt="" />
+      <img class="card" height="100px" th:src="@{${'/tramp/' + card2.id + '.jpg'}}" alt="" />
     </div>
-    トランプの数字の合計が17以上なのでスタンドします<br>
-    スタンド後の合計:[[${dTotal}]]
+    <div class="delfloat">
+      スタンドします<br>
+      スタンド後の合計:[[${dTotal}]]
+    </div>
   </div>
 
   <div class="largefont text-center" th:switch="${result}">
