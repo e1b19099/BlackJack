@@ -102,14 +102,9 @@
     </div>
   </div>
 
-  <div class="text-center" th:if="${AddDCards}">
-    <div th:each="card2,stat:${AddDCards}">
-      <img class="card" height="100px" th:src="@{${'/tramp/' + card2.id + '.jpg'}}" alt="" />
-    </div>
-    <div class="delfloat">
-      スタンドします<br>
-      スタンド後の合計:[[${dTotal}]]
-    </div>
+  <div class="delfloat" th:if="${dTotal}">
+    スタンドします<br>
+    スタンド後の合計:[[${dTotal}]]
   </div>
 
   <div class="largefont text-center" th:switch="${result}">

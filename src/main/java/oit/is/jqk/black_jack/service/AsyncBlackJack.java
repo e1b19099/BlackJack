@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import oit.is.jqk.black_jack.model.Card;
+import oit.is.jqk.black_jack.model.CardMapper;
 import oit.is.jqk.black_jack.model.Deal;
 import oit.is.jqk.black_jack.model.DealMapper;
 import oit.is.jqk.black_jack.model.DeckMapper;
@@ -121,6 +123,28 @@ public class AsyncBlackJack {
       // emitter.complete();
     }
     System.out.println("asyncBlackJack complete");
+  }
+
+  // 手札の合計
+  public int sumHand(ArrayList<Card> List) {
+    int total = 0;
+    int countAce = 0;
+    for (Card card : List) {
+      int number = card.getNumber();
+      if (number > 10)
+        number = 10;
+      if (number == 1) {
+        number = 11;
+        countAce += 1;
+      }
+      total += number;
+    }
+    while (total > 21 && countAce > 0) {
+      total -= 10;
+      countAce -= 1;
+    }
+
+    return total;
   }
 
 }
