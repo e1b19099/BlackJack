@@ -7,6 +7,7 @@ public class Room {
   String room_name;
   int limits;
   int count;
+  int turn;
 
   public Room() {
 
@@ -17,6 +18,15 @@ public class Room {
     this.room_name = room.getRoom_name();
     this.limits = room.getLimits();
     this.count = room.getCount();
+    this.turn = room.getTurn();
+  }
+
+  public int getTurn() {
+    return turn;
+  }
+
+  public void setTurn(int turn) {
+    this.turn = turn;
   }
 
   public int getLimits() {

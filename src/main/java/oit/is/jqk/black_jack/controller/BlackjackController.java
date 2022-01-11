@@ -30,7 +30,7 @@ import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
 import oit.is.jqk.black_jack.service.AsyncCountFruit56;
-import oit.is.jqk.black_jack.service.AsyncShopService57;
+import oit.is.jqk.black_jack.service.AsyncBlackJack;
 
 @Controller
 @RequestMapping("/")
@@ -57,7 +57,7 @@ public class BlackjackController {
   private AsyncCountFruit56 ac56;
 
   @Autowired
-  private AsyncShopService57 as57;
+  private AsyncBlackJack bj;
 
   ArrayList<Card> cList = new ArrayList<>();
   ArrayList<Card> dList = new ArrayList<>();
@@ -471,7 +471,7 @@ public class BlackjackController {
     // push処理の秘密兵器．これを利用してブラウザにpushする
     // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
     final SseEmitter sseEmitter = new SseEmitter();
-    this.as57.asyncShowFruitsList(sseEmitter, room_id, ui.getUser_id());
+    this.bj.asyncShowBlackJack(sseEmitter, room_id, ui.getUser_id());
     return sseEmitter;
   }
 }
