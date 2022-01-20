@@ -23,4 +23,7 @@ public interface DeckMapper {
 
   @Delete("DELETE FROM deck WHERE deck_id = #{deck_id} and id = #{id}")
   boolean deleteDeckById(int deck_id, int id);
+
+  @Delete("DELETE FROM deck WHERE deck_id = #{deck_id}")
+  boolean deleteDeckData(int deck_id);
 }

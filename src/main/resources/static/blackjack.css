@@ -14,6 +14,19 @@ h1{
   padding: 10px;
 }
 
+body{
+  height: 100%;
+  background-color: green;
+}
+
+body.blur::before{
+  content: '';
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 div{
   font-family: 'Noto Sans JP', sans-serif;
 }
@@ -56,28 +69,101 @@ form{
 #wait_screen{
   width:100%;
   height:100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  flex-direction: column;
+/*  border-radius: 10% / 20%;
+  border: 15px solid;
+  border-color: greenyellow;
+*/
+  z-index: 120;
+  display:flex;
   position: fixed;
   justify-content: center;
   align-items: center;
-  vertical-align: middle;
 }
 
-
-
+#wait_screen p{
+  font-size: larger;
+  font-weight:bolder;
+  color: white;
+  letter-spacing: 3px;
+  text-align: center;
+}
 
 #wait_screen.disable{
   display: none;
   z-index: -100;
 }
-.card{
+.user_card{
   float: left;
   margin: 10px;
 }
 
-.delfloat
+.dealer_card{
+  float: left;
+  margin: 10px;
+}
+
+.user_total
 {
   clear: both;
+}
+
+.dealer_total{
+  clear: both;
+}
+
+#bet_container{
+  width:400px;
+  height:200px;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10% / 20%;
+  border: 15px solid;
+  border-color: greenyellow;
+  z-index: 100;
+  display:flex;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+}
+
+#bet_container.disable{
+  display: none;
+  z-index: -100;
+}
+
+#container{
+  height: 100px;
+  display: inline-block;
+}
+
+#bet_container #container p{
+  font-size: larger;
+  font-weight:bolder;
+  color: white;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+#users{
+  width: 100%;
+  z-index: 100;
+  display:flex;
+}
+
+#users .user{
+  width:200px;
+  height:100px;
+  border-radius: 10% / 10%;
+  border: 5px solid;
+  border-color: white;
+  margin-right: 20px;
 }

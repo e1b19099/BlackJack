@@ -20,5 +20,7 @@ public interface DealMapper {
   @Delete("DELETE FROM Deal where deal_id = #{deal_id}")
   void deleteUserDeal(int deal_id);
 
-  
+  @Select("SELECT card.id,suit,number FROM deal natural join card where deal_id = #{deal_id}")
+  ArrayList<Card> selectDealCardById(int deal_id);
+
 }

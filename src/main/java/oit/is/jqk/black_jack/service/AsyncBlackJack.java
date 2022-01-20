@@ -1,5 +1,6 @@
 package oit.is.jqk.black_jack.service;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -25,10 +26,12 @@ import oit.is.jqk.black_jack.model.RoomUser;
 import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
+import oit.is.jqk.black_jack.model.Deck;
+import java.util.Collections;
 
 @Service
 public class AsyncBlackJack {
-  boolean dbUpdated = false;
+  boolean dbUpdated;
   boolean noLimit = false;
 
   private final Logger logger = LoggerFactory.getLogger(AsyncBlackJack.class);
@@ -48,6 +51,9 @@ public class AsyncBlackJack {
   @Autowired
   UserinfoMapper userinfoMapper;
 
+  @Autowired
+  CardMapper cardMapper;
+
   @Transactional
   public MyRoom selectMyRoom(int room_id) {
     Room room = roomMapper.selectRoomById(room_id);
@@ -59,6 +65,7 @@ public class AsyncBlackJack {
       Members member = new Members(roomuser);
       Userinfo ui = userinfoMapper.selectUserById(member.getUser_id());
       ArrayList<Deal> deal = dealMapper.selectDealById(member.getDeal_id());
+      member.setTotal(sumHand(room_id, ui.getUser_id()));
       member.setDeals(deal);
       member.setName(ui.getUsername());
       members.add(member);
@@ -68,19 +75,118 @@ public class AsyncBlackJack {
   }
 
   @Transactional
+  public void enterRoom(int room_id, int user_id) {
+    boolean isEntering = false;
+    ArrayList<RoomUser> users = roomUserMapper.selectRoomUserByRoomid(room_id);
+    for (RoomUser ru : users) {
+      if (ru.getUser_id() == user_id) {
+        // return "error_joined.html";
+        isEntering = true;
+      }
+    }
+    if (isEntering == false) {
+      roomUserMapper.insertRoomUser(room_id, user_id);
+    }
+    RoomUser ru = roomUserMapper.selectRoomUserByAllId(room_id, user_id);
+    RoomUser dealer = roomUserMapper.selectRoomUserByAllId(room_id, 0);
+    dealMapper.deleteUserDeal(ru.getDeal_id());
+    dealMapper.deleteUserDeal(dealer.getDeal_id());
+    dbUpdated = true;
+  }
+
+  @Transactional
   public void updateTurn(int room_id) {
     Room room = roomMapper.selectRoomById(room_id);
     int turn = room.getTurn();
     room.setTurn(turn + 1);
     roomMapper.updateTurnById(room);
+    dbUpdated = true;
   }
 
-  public void init(int room_id) {
-    updateTurn(room_id);
+  @Transactional
+  public Card drawCard(int room_id) {
+    Deck deck = deckMapper.selectDeckById(room_id);
+    int card_id = deck.getId();
+    deckMapper.deleteDeckById(room_id, card_id);
+    Card getCard = cardMapper.selectById(card_id);
+    dbUpdated = true;
+    return getCard;
   }
 
+  @Transactional
+  public void dealUser(int room_id, int user_id, int card_id) {
+    RoomUser ruUser = roomUserMapper.selectRoomUserByAllId(room_id, user_id);
+    int deal_id = ruUser.getDeal_id();
+    ArrayList<Deal> deals = dealMapper.selectDealById(deal_id);
+    int max = 0;
+    if (deals != null) {
+      for (Deal deal : deals) {
+        if (max < deal.getDeal_number()) {
+          max = deal.getDeal_number();
+        }
+      }
+    }
+    Deal newDeal = new Deal();
+    newDeal.setDeal_id(deal_id);
+    newDeal.setDeal_number(max + 1);
+    newDeal.setId(card_id);
+    dealMapper.insertDeal(newDeal);
+    dbUpdated = true;
+  }
+
+  @Transactional
+  public void deleteDeck(int room_id) {
+    deckMapper.deleteDeckData(room_id);
+  }
+
+  @Transactional
+  public void insertAllDeck(int room_id, ArrayList<Card> deck) {
+    deckMapper.bulkinsert(room_id, deck);
+  }
+
+  @Transactional
+  public void init(int room_id, ArrayList<Members> members) {
+    deleteDeck(room_id);
+    ArrayList<Card> deck = cardMapper.selectAll();
+    // デッキシャッフル
+    Collections.shuffle(deck);
+    insertAllDeck(room_id, deck);
+    // updateTurn(room_id);
+
+    for (int j = 1; j < members.size(); j++) {
+      for (int i = 0; i < 2; i++) {
+        Card card = drawCard(room_id);
+        dealUser(room_id, members.get(j).getUser_id(), card.getId());
+      }
+    }
+
+    // ディーラーの処理
+    // 初期手札の配布
+    for (int i = 0; i < 2; i++) {
+      Card card = drawCard(room_id);
+      dealUser(room_id, 0, card.getId());
+    }
+    dbUpdated = true;
+  }
+
+  @Transactional
+  public void hit(int room_id, int user_id) {
+    Card getCard = drawCard(room_id);
+    dealUser(room_id, user_id, getCard.getId());
+    dbUpdated = true;
+  }
+
+  @Transactional
   public void stand(int room_id) {
     updateTurn(room_id);
+    dbUpdated = true;
+  }
+
+  @Transactional
+  public void bet(int room_id, int user_id, int bet) {
+    roomUserMapper.updateUseChipById(room_id, user_id, bet);
+    userinfoMapper.updateChipById(user_id, -bet);
+    dbUpdated = true;
   }
 
   public void forcedStart() {
@@ -94,8 +200,8 @@ public class AsyncBlackJack {
    */
   @Async
   public void asyncShowBlackJack(SseEmitter emitter, int room_id, int user_id) {
-    dbUpdated = true;
     try {
+      dbUpdated = true;
       while (true) {// 無限ループ
         // DBが更新されていなければ0.5s休み
         if (false == dbUpdated) {
@@ -104,17 +210,59 @@ public class AsyncBlackJack {
         }
         MyRoom myroom = selectMyRoom(room_id);
         ArrayList<Members> members = myroom.getMembers();
-        if (myroom.getLimits() > members.size() - 1 || noLimit == true) {
-          myroom.setLimit(false);
-        } else {
-          myroom.setLimit(true);
-          noLimit = false;
+        int turn = myroom.getTurn();
+        switch (turn) {
+          case -1:
+            if (myroom.getLimits() <= members.size() - 1 || noLimit == true) {
+              myroom.setLimit(true);
+              updateTurn(room_id);
+              myroom.setTurn(turn + 1);
+              noLimit = false;
+            }
+            break;
+          case 0:
+            int betted = roomUserMapper.selectBettedUserCount(room_id);
+            if (betted <= 1) {
+              init(room_id, members);
+              updateTurn(room_id);
+              myroom.setTurn(turn + 1);
+            }
+            break;
+
+        }
+        turn = myroom.getTurn();
+        if (turn > members.size() - 1) {
+          Members dealer = members.get(0);
+          int d = dealer.getTotal();
+          if (d > 21)
+            d = 0;
+          for (int i = 1; i < members.size(); i++) {
+            Members member = members.get(i);
+            int p = member.getTotal();
+
+            if (p > 21)
+              p = -1;
+
+            if (p > d) {
+              member.setResult(1);
+              userinfoMapper.updateChipById(member.getUser_id(), member.getUse_chip() * 2);
+            } else if (p < d) {
+              member.setResult(-1);
+            } else {
+              member.setResult(2);
+              userinfoMapper.updateChipById(member.getUser_id(), member.getUse_chip());
+            }
+            myroom.setMembers(members);
+          }
+
+        } else if (turn >= 1) {
+          
         }
         ArrayList<Object> sendObj = new ArrayList<>();
         sendObj.add(myroom);
         emitter.send(sendObj, MediaType.APPLICATION_JSON);
-        TimeUnit.MILLISECONDS.sleep(1000);
-        // dbUpdated = false;
+        TimeUnit.MILLISECONDS.sleep(300);
+        dbUpdated = true;
       }
     } catch (Exception e) {
       // 例外の名前とメッセージだけ表示する
@@ -126,10 +274,13 @@ public class AsyncBlackJack {
   }
 
   // 手札の合計
-  public int sumHand(ArrayList<Card> List) {
+  public int sumHand(int room_id, int user_id) {
+    RoomUser roomuser = roomUserMapper.selectRoomUserByAllId(room_id, user_id);
+    ArrayList<Card> list = dealMapper.selectDealCardById(roomuser.getDeal_id());
+
     int total = 0;
     int countAce = 0;
-    for (Card card : List) {
+    for (Card card : list) {
       int number = card.getNumber();
       if (number > 10)
         number = 10;
@@ -143,6 +294,7 @@ public class AsyncBlackJack {
       total -= 10;
       countAce -= 1;
     }
+    dbUpdated = true;
 
     return total;
   }

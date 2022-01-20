@@ -5,6 +5,24 @@ import java.util.ArrayList;
 public class Members extends RoomUser {
   ArrayList<Deal> deals;
   String name;
+  int total;
+  int result;
+
+  public int getResult() {
+    return result;
+  }
+
+  public void setResult(int result) {
+    this.result = result;
+  }
+
+  public int getTotal() {
+    return total;
+  }
+
+  public void setTotal(int total) {
+    this.total = total;
+  }
 
   public String getName() {
     return name;
