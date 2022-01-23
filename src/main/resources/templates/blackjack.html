@@ -103,6 +103,10 @@
           for (let i = 0; i < members.length; i++) {
             if (members[i].user_id == [[${ user_id }]]) {
               user_number = i;
+              let user = document.getElementsByClassName("user");
+              let me = document.createElement("p");
+              me.innerHTML = "<span class='arrow'>↑</span>YOU<span class='arrow'>↑</span>";
+              user[user_number - 1].appendChild(me);
             }
           }
         }
@@ -202,15 +206,14 @@
     <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark button" role="button">退室</a></p>
   </div>
 
-  <div class="text-center">
+  <div id="dealer" class="text-center">
+    <p id="dealer_text">ディーラー</p>
     <div class="dealer_card">
 
     </div>
     <div class="dealer_total">
-      スタンドします<br>
-      スタンド後の合計:[[${dTotal}]]
+      ディーラーの合計:?????
     </div>
-    <h2>ディーラー</h2>
   </div>
 
 
@@ -218,16 +221,11 @@
 
   <div id="users" class="text-center">
     <!--スタンド時にボタンが非表示に-->
-    <div>
+  </div>
+  <div>
+    <input type="button" onclick="hit();" value="ヒット">
 
-      <!--Hit_Z0413-->
-      <input type="button" onclick="hit();" value="ヒット">
-
-      <input type="button" onclick="stand();" value="スタンド">
-    </div>
-    <div th:if="${stand_flag}">
-      スタンドしました
-    </div>
+    <input type="button" onclick="stand();" value="スタンド">
   </div>
 
 
@@ -263,7 +261,12 @@
         <input type="reset" value="リセット">
       </form>
     </div>
-
+  </div>
+  <div id="bet_waiting" class="disable">
+    <p>他の人のベットが完了するのを待っています...</p>
+  </div>
+  <div id="waiting_turn" class="disable">
+    <p></p>
   </div>
   <!-- JavaScriptを読み込む // -->
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"
