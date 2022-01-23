@@ -124,7 +124,7 @@
           }
           console.log(deal_count);
           let turn = room[0].turn;
-          if (turn >= 1) {
+          if (turn >= 1 && turn < members.length) {
             if (once == 2) {
               bet_waiting.classList.add("disable");
               body.classList.remove("blur");
@@ -139,8 +139,19 @@
                 waiting_turn.classList.remove("disable");
               }
             }
-          } else if (turn >= members.length) {
+            for (let i = deal_count[0]; i < dealer.deals.length; i++) {
+              dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
+              if (deal_count[0] < dealer.deals.length) {
+                dealer_card.innerHTML = dtext;
+              }
+              count[0] = dealer.deals.length;
+            }
+            deal_count[0] = count[0];
+          }
+          if (turn >= members.length) {
             if (once == 3) {
+              let waiting_turn = document.getElementById("waiting_turn");
+              waiting_turn.classList.add("disable");
               dtext = "";
               for (let i = 0; i < dealer.deals.length; i++) {
                 dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
@@ -169,14 +180,7 @@
             }
           }
 
-          for (let i = deal_count[0]; i < dealer.deals.length; i++) {
-            dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
-            if (deal_count[0] < dealer.deals.length) {
-              dealer_card.innerHTML = dtext;
-            }
-            count[0] = dealer.deals.length;
-          }
-          deal_count[0] = count[0];
+
 
 
           let user = document.getElementsByClassName("user");
