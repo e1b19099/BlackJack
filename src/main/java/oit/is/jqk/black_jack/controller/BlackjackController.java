@@ -342,48 +342,13 @@ public class BlackjackController {
     // ヒット処理
     dTotal = bj.sumHand(room_id, 0);
     while (dTotal <= 16) {
-      Card Addcard = drawCard(room_id);
+      Card Addcard = bj.drawCard(room_id);
       bj.dealUser(room_id, 0, Addcard.getId());
       // dList.add(Addcard);
       dTotal = bj.sumHand(room_id, 0);
     }
-    /*
-     * while (dTotal <= 16) { // Card Addcard = deck.remove(0); Card Addcard =
-     * drawCard(room_id); int number2 = Addcard.getNumber(); if (number2 > 10) {
-     * number2 = 10; } dTotal += number2; AddDCards.add(Addcard); }
-     * model.addAttribute("AddDCards", AddDCards);
-     */
-
-    // 勝敗判定
-    int p = total, d = dTotal;
-    int result = 0;
-    if (total > 21)
-      p = -1;
-    if (dTotal > 21)
-      d = 0;
-
-    if (p > d) {
-      result = 1;
-      uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), betChip * 2);
-    } else if (p < d) {
-      result = -1;
-    } else if (p == d) {
-      result = 2;
-      uMapper.updateChipById(uMapper.selectUserIdByName(loginUser), betChip);
-    }
 
     bj.stand(room_id);
-
-    model.addAttribute("room_id", room_id);
-    model.addAttribute("cards", cList);
-    model.addAttribute("total", total);
-    model.addAttribute("dCards", dList);
-    model.addAttribute("dTotal", dTotal);
-
-    model.addAttribute("tmpdTotal", tmpdTotal);
-    model.addAttribute("stand_flag", stand_flag);
-    model.addAttribute("user", user);
-    model.addAttribute("result", result);
     return "blackjack.html";
   }
 

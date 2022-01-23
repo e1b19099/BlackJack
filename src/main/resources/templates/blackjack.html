@@ -114,48 +114,92 @@
         if (user_number != -1 && player.use_chip != 0) {
           if (once == 1) {
             let bet_container = document.getElementById("bet_container");
+            let bet_waiting = document.getElementById("bet_waiting");
+            bet_waiting.classList.remove("disable");
             bet_container.classList.add("disable");
-            body.classList.remove("blur");
             deal_count = new Array(room[0].limits + 1).fill(0);
             ptext = new Array(room[0].limits + 1).fill("");
             count = new Array(room[0].limits + 1).fill(0);
-            once = 0;
+            once = 2;
           }
           console.log(deal_count);
-
-          if (room[0].turn >= 1) {
-
-            for (let i = deal_count[0]; i < dealer.deals.length; i++) {
-              dtext += '<img height="50px" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
-              if (deal_count[0] < dealer.deals.length) {
-                dealer_card.innerHTML = dtext;
-              }
-              count[0] = dealer.deals.length;
+          let turn = room[0].turn;
+          if (turn >= 1) {
+            if (once == 2) {
+              bet_waiting.classList.add("disable");
+              body.classList.remove("blur");
+              once = 3;
             }
-            deal_count[0] = count[0];
-
-
-            let user = document.getElementsByClassName("user");
-            for (let j = 1; j < members.length; j++) {
-              let user_card = user[j - 1].childNodes[0];
-              let user_total = user[j - 1].childNodes[1];
-              for (let i = deal_count[j]; i < members[j].deals.length; i++) {
-                ptext[j] += '<img height="50px" src="/tramp/' + members[j].deals[i].id + '.jpg" />';
-                if (deal_count[j] < members[j].deals.length) {
-                  user_total.innerHTML = "<p>合計:" + members[j].total + "</p>";
-                  user_card.innerHTML = ptext[j];
-                }
-                count[j] = members[j].deals.length;
+            if (turn == user_number) {
+              let waiting_turn = document.getElementById("waiting_turn");
+              waiting_turn.classList.add("disable");
+            } else {
+              let waiting_turn = document.getElementById("waiting_turn");
+              if (waiting_turn.classList.contains("disable")) {
+                waiting_turn.classList.remove("disable");
               }
-              deal_count[j] = count[j];
+            }
+          } else if (turn >= members.length) {
+            if (once == 3) {
+              dtext = "";
+              for (let i = 0; i < dealer.deals.length; i++) {
+                dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
+
+              }
+              dealer_card.innerHTML = dtext;
+              let user = document.getElementsByClassName("user");
+              for (let i = 1; i < members.length; i++) {
+                let result = members[i].result;
+                let result_text = "";
+                if (result == 1) {
+                  result_text = "YOUWIN!!";
+                } else if (result == -1) {
+                  result_text = "YOULOSE...";
+                } else if (result == 2) {
+                  result_text = "DRAW!";
+                } else {
+                  result_text = "error...";
+                }
+                let element = document.createElement("p");
+                element.innerText = result_text;
+                user[i - 1].append(element);
+
+              }
+              once = 4;
             }
           }
-        }
 
+          for (let i = deal_count[0]; i < dealer.deals.length; i++) {
+            dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
+            if (deal_count[0] < dealer.deals.length) {
+              dealer_card.innerHTML = dtext;
+            }
+            count[0] = dealer.deals.length;
+          }
+          deal_count[0] = count[0];
+
+
+          let user = document.getElementsByClassName("user");
+          for (let j = 1; j < members.length; j++) {
+            let user_card = user[j - 1].childNodes[0];
+            let user_total = user[j - 1].childNodes[1];
+            for (let i = deal_count[j]; i < members[j].deals.length; i++) {
+              ptext[j] += '<img width="20%" src="/tramp/' + members[j].deals[i].id + '.jpg" />';
+              if (deal_count[j] < members[j].deals.length) {
+                user_total.innerHTML = "<p>合計:" + members[j].total + "</p>";
+                user_card.innerHTML = ptext[j];
+              }
+              count[j] = members[j].deals.length;
+            }
+            deal_count[j] = count[j];
+          }
+        }
         console.log(members);
-        document.getElementById("p1").textContent = event.data;
-        //document.getElementById("player_card").innerHTML = "<img src='/tramp/" + members[1].deals[0].id + ".jpg' /> ";
       }
+
+
+      //document.getElementById("p1").textContent = event.data;
+      //document.getElementById("player_card").innerHTML = "<img src='/tramp/" + members[1].deals[0].id + ".jpg' /> ";
 
 
 
@@ -222,10 +266,9 @@
   <div id="users" class="text-center">
     <!--スタンド時にボタンが非表示に-->
   </div>
-  <div>
-    <input type="button" onclick="hit();" value="ヒット">
-
-    <input type="button" onclick="stand();" value="スタンド">
+  <div id="hit_stand">
+    <input class="btn btn-info btn-lg active" type="button" onclick="hit();" value="ヒット" />
+    <input class="btn btn-danger btn-lg active" onclick="stand();" type=" button" value="スタンド" />
   </div>
 
 
@@ -266,7 +309,10 @@
     <p>他の人のベットが完了するのを待っています...</p>
   </div>
   <div id="waiting_turn" class="disable">
-    <p></p>
+    <p>他のユーザの動作を待っています...</p>
+  </div>
+  <div id="result_board" class="disable">
+    <p>You Win!!</p>
   </div>
   <!-- JavaScriptを読み込む // -->
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"

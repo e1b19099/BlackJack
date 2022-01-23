@@ -251,7 +251,7 @@ public class AsyncBlackJack {
 
         }
         turn = myroom.getTurn();
-        if (turn > members.size() - 1) {
+        if (turn >= members.size()) {
           Members dealer = members.get(0);
           int d = dealer.getTotal();
           if (d > 21)
@@ -275,7 +275,7 @@ public class AsyncBlackJack {
             myroom.setMembers(members);
           }
 
-        } else if (turn >= 1) {
+        } else if (turn >= 1 && turn <= members.size() - 1) {
           ArrayList<Deal> dealer_deals = members.get(0).getDeals();
           dealer_deals.get(0).setId(53);
           myroom.getMembers().get(0).setDeals(dealer_deals);
