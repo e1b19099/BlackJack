@@ -12,6 +12,6 @@ public interface CardMapper {
   @Select("SELECT id,suit,number from card where id = #{id}")
   Card selectById(int id);
 
-  @Select("SELECT id,suit,number from card")
+  @Select("SELECT id,suit,number from card where id != 53")
   ArrayList<Card> selectAll();
 }

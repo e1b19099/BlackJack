@@ -62,3 +62,4 @@ INSERT INTO card (id,suit,number) VALUES (49,'spade',10);
 INSERT INTO card (id,suit,number) VALUES (50,'spade',10);
 INSERT INTO card (id,suit,number) VALUES (51,'spade',10);
 INSERT INTO card (id,suit,number) VALUES (52,'spade',10);
+INSERT INTO card (id,suit,number) VALUES (53,'',-1);

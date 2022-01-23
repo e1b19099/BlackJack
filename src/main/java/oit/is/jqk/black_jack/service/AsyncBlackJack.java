@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import oit.is.jqk.black_jack.model.Card;
 import oit.is.jqk.black_jack.model.CardMapper;
 import oit.is.jqk.black_jack.model.Deal;
@@ -86,11 +87,25 @@ public class AsyncBlackJack {
     }
     if (isEntering == false) {
       roomUserMapper.insertRoomUser(room_id, user_id);
+      for (int i = 0; i < 2; i++) {
+        Card card = drawCard(room_id);
+        dealUser(room_id, user_id, card.getId());
+      }
+      ArrayList<Deal> dealer_deal = dealMapper
+          .selectDealById(roomUserMapper.selectRoomUserByAllId(room_id, 0).getDeal_id());
+      if (dealer_deal.size() == 0) {
+        for (int i = 0; i < 2; i++) {
+          Card card = drawCard(room_id);
+          dealUser(room_id, 0, card.getId());
+        }
+      }
     }
-    RoomUser ru = roomUserMapper.selectRoomUserByAllId(room_id, user_id);
-    RoomUser dealer = roomUserMapper.selectRoomUserByAllId(room_id, 0);
-    dealMapper.deleteUserDeal(ru.getDeal_id());
-    dealMapper.deleteUserDeal(dealer.getDeal_id());
+    /*
+     * RoomUser ru = roomUserMapper.selectRoomUserByAllId(room_id, user_id);
+     * RoomUser dealer = roomUserMapper.selectRoomUserByAllId(room_id, 0);
+     * dealMapper.deleteUserDeal(ru.getDeal_id());
+     * dealMapper.deleteUserDeal(dealer.getDeal_id());
+     */
     dbUpdated = true;
   }
 
@@ -146,27 +161,31 @@ public class AsyncBlackJack {
 
   @Transactional
   public void init(int room_id, ArrayList<Members> members) {
-    deleteDeck(room_id);
-    ArrayList<Card> deck = cardMapper.selectAll();
-    // デッキシャッフル
-    Collections.shuffle(deck);
-    insertAllDeck(room_id, deck);
-    // updateTurn(room_id);
+    try {
+      // deleteDeck(room_id);
 
-    for (int j = 1; j < members.size(); j++) {
-      for (int i = 0; i < 2; i++) {
-        Card card = drawCard(room_id);
-        dealUser(room_id, members.get(j).getUser_id(), card.getId());
-      }
+      // updateTurn(room_id);
+
+      /*
+       * for (int j = 1; j < members.size(); j++) { for (int i = 0; i < 2; i++) { Card
+       * card = drawCard(room_id); dealUser(room_id, members.get(j).getUser_id(),
+       * card.getId()); } }
+       */
+
+      // ディーラーの処理
+      // 初期手札の配布
+      /*
+       * for (int i = 0; i < 2; i++) { Card card = drawCard(room_id);
+       * dealUser(room_id, 0, card.getId()); }
+       */
+
+    } catch (Exception e) {
+      logger.warn("Exception:" + e.getClass().getName() + ":" + e.getMessage());
+      System.out.println("エラー発生中");
+    } finally {
+      dbUpdated = true;
     }
 
-    // ディーラーの処理
-    // 初期手札の配布
-    for (int i = 0; i < 2; i++) {
-      Card card = drawCard(room_id);
-      dealUser(room_id, 0, card.getId());
-    }
-    dbUpdated = true;
   }
 
   @Transactional
@@ -222,10 +241,11 @@ public class AsyncBlackJack {
             break;
           case 0:
             int betted = roomUserMapper.selectBettedUserCount(room_id);
-            if (betted <= 1) {
+            if (betted <= 1 && noLimit == false) {
               init(room_id, members);
               updateTurn(room_id);
               myroom.setTurn(turn + 1);
+              noLimit = true;
             }
             break;
 
@@ -256,7 +276,9 @@ public class AsyncBlackJack {
           }
 
         } else if (turn >= 1) {
-          
+          ArrayList<Deal> dealer_deals = members.get(0).getDeals();
+          dealer_deals.get(0).setId(53);
+          myroom.getMembers().get(0).setDeals(dealer_deals);
         }
         ArrayList<Object> sendObj = new ArrayList<>();
         sendObj.add(myroom);

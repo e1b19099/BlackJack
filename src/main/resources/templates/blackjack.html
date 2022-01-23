@@ -72,7 +72,7 @@
       let member_count;
       let user_number = -1;
       enable_waitScreen();
-      var sse = new EventSource('/blackjack/status/' + [[${ room_id }]]);
+      var sse = new EventSource('/blackjack/status/' + [[${ room_id }]] + '/' + [[${ user_id }]]);
 
 
 

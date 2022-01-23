@@ -37,7 +37,7 @@ import oit.is.jqk.black_jack.service.AsyncBlackJack;
 @RequestMapping("/")
 public class BlackjackController {
   @Autowired
-  CardMapper cmapper;
+  CardMapper cMapper;
 
   @Autowired
   RoomMapper rMapper;
@@ -115,6 +115,11 @@ public class BlackjackController {
     room.setLimits(count);
     rMapper.insertRoom(room);
     ArrayList<Room> rooms = rMapper.selectAllRoom();
+    int room_id = rooms.get(rooms.size() - 1).getRoom_id();
+    ArrayList<Card> deck = cMapper.selectAll();
+    // デッキシャッフル
+    Collections.shuffle(deck);
+    deckMapper.bulkinsert(room_id, deck);
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
@@ -128,7 +133,7 @@ public class BlackjackController {
   public String Blackjack02(@PathVariable Integer room_id, ModelMap model) {
     Random rand = new Random();
     int id = rand.nextInt(52) % 52 + 1;
-    Card card = cmapper.selectById(id);
+    Card card = cMapper.selectById(id);
     model.addAttribute("room_id", room_id);
     model.addAttribute("card", card);
     model.addAttribute("id", id);
@@ -140,7 +145,7 @@ public class BlackjackController {
     Deck deck = deckMapper.selectDeckById(room_id);
     int card_id = deck.getId();
     deckMapper.deleteDeckById(room_id, card_id);
-    Card getCard = cmapper.selectById(card_id);
+    Card getCard = cMapper.selectById(card_id);
     return getCard;
   }
 
@@ -240,7 +245,7 @@ public class BlackjackController {
     dealMapper.deleteUserDeal(ru.getDeal_id());
     dealMapper.deleteUserDeal(dealer.getDeal_id());
     if (deckMapper.selectDeckById(room_id) == null) {
-      deck = cmapper.selectAll();
+      deck = cMapper.selectAll();
       // デッキシャッフル
       Collections.shuffle(deck);
       deckMapper.bulkinsert(room_id, deck);
@@ -382,15 +387,14 @@ public class BlackjackController {
     return "blackjack.html";
   }
 
-  @GetMapping("/blackjack/status/{room_id}")
-  public SseEmitter pushRoomList(@PathVariable Integer room_id, Principal prin) {
-    Userinfo ui = uMapper.selectUserByName(prin.getName());
+  @GetMapping("/blackjack/status/{room_id}/{user_id}")
+  public SseEmitter pushRoomList(@PathVariable Integer room_id, @PathVariable Integer user_id) {
     // infoレベルでログを出力する
 
     // push処理の秘密兵器．これを利用してブラウザにpushする
     // finalは初期化したあとに再代入が行われない変数につける（意図しない再代入を防ぐ）
     final SseEmitter sseEmitter = new SseEmitter();
-    this.bj.asyncShowBlackJack(sseEmitter, room_id, ui.getUser_id());
+    this.bj.asyncShowBlackJack(sseEmitter, room_id, user_id);
     return sseEmitter;
   }
 }
