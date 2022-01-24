@@ -119,7 +119,7 @@ public class BlackjackController {
 
   @GetMapping("/room")
   public String Room01(ModelMap model) {
-    ArrayList<Room> rooms = rMapper.selectAllRoom();
+    ArrayList<Room> rooms = rMapper.selectAliveRoom();
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
@@ -149,6 +149,7 @@ public class BlackjackController {
     // デッキシャッフル
     Collections.shuffle(deck);
     deckMapper.bulkinsert(room_id, deck);
+    rooms = rMapper.selectAliveRoom();
     if (rooms.isEmpty()) {
       model.addAttribute("rooms", 0);
     } else {
