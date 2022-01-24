@@ -5,15 +5,32 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/signup.css">
+  <title>ユーザ登録画面</title>
 </head>
 
 <body>
-  <form action="/signup" method="post">
-    ユーザID：<input type="text" name="username" /><br>
-    パスワード：<input type="text" name="password" /><br>
-    <input class="btn-dark marbutton" type="submit" value="登録" />
-  </form>
+  <h1 class="text-center">ユーザ登録画面</h1>
+  <div class="text-center">
+    <form action="/signup" method="post">
+      <p>ユーザIDとパスワードを入力してください(パスワードは最大8文字まで入力できます)
+      </p>
+        ユーザID：<input type="text" name="username" /><br>
+        パスワード：<input type="password" size="15" maxlength="8" name="password" /><br>
+      <input class="btn btn-sm btn-dark marbutton" type="submit" value="登録" id="register" />
+    </form>
+    <p class="text-center">登録を終えたらここをクリック→<a href="/" class="btn btn-sm btn-dark marbutton" role="button">ホームに戻る</a></p>
+  </div>
+  <script>
+    document.getElementById("register").addEventListener("click",function () {
+      let element = document.createElement("p");
+      let text = document.createTextNode("ユーザ登録完了!!");
+      document.body.appendChild(element).appendChild(text);
+    })
+  </script>
 </body>
 
 </html>

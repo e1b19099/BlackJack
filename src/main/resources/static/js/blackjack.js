@@ -1,3 +1,4 @@
+
 let element = document.querySelector(".largefont");
 element.style.color = "red";
 
@@ -9,3 +10,8 @@ function betcontrol() {
     alert("負の値は入力できません");
   }
 }
+
+document.getElementById("drawCard").addEventListener("click",function () {
+  document.getElementById("cardDraw").play();
+  console.log("クリック成功");
+})

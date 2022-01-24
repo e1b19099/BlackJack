@@ -92,7 +92,7 @@ public class BlackjackController {
     newUser.setUsername(username);
     newUser.setPassword(passwordEncoder().encode(password));
     userservice.insertUserData(newUser);
-    return "signuped.html";
+    return "signup.html";
   }
 
   /*
