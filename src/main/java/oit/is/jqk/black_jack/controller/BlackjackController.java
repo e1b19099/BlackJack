@@ -340,13 +340,7 @@ public class BlackjackController {
     total = bj.sumHand(room_id, user.getUser_id());
 
     // ヒット処理
-    dTotal = bj.sumHand(room_id, 0);
-    while (dTotal <= 16) {
-      Card Addcard = bj.drawCard(room_id);
-      bj.dealUser(room_id, 0, Addcard.getId());
-      // dList.add(Addcard);
-      dTotal = bj.sumHand(room_id, 0);
-    }
+    
 
     bj.stand(room_id);
     return "blackjack.html";

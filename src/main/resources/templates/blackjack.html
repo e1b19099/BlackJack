@@ -71,6 +71,7 @@
       let limit_flag = false;
       let member_count;
       let user_number = -1;
+      let use_chips = new Array();
       enable_waitScreen();
       var sse = new EventSource('/blackjack/status/' + [[${ room_id }]] + '/' + [[${ user_id }]]);
 
@@ -87,26 +88,33 @@
         console.log(members);
         console.log(room[0].turn);
         let dealer = members[0];
-
         if (room[0].turn == -1 && member_count != members.length - 1) {
           let user_count = document.getElementById("user_count");
           member_count = members.length - 1;
           user_count.innerText = member_count + " / " + (room[0].limits);
         }
-        if (limit_flag == false && room[0].turn == 0) {
+        if (limit_flag == false && room[0].turn == 0 && room[0].limits <= members.length - 1) {
           disable_waitScreen();
           limit_flag = true;
           let users = document.getElementById("users");
           for (let i = 0; i < members.length - 1; i++) {
             users.innerHTML += '    <div class="user"><div class="user_card" ></div ><div class="user_total"></div></div>';
           }
-          for (let i = 0; i < members.length; i++) {
+          let user = document.getElementsByClassName("user");
+          for (let i = 1; i < members.length; i++) {
             if (members[i].user_id == [[${ user_id }]]) {
               user_number = i;
-              let user = document.getElementsByClassName("user");
+            }
+          }
+          for (let i = 1; i < members.length; i++) {
+            if (i == user_number) {
               let me = document.createElement("p");
               me.innerHTML = "<span class='arrow'>↑</span>YOU<span class='arrow'>↑</span>";
-              user[user_number - 1].appendChild(me);
+              user[i - 1].appendChild(me);
+            } else {
+              let you = document.createElement("p");
+              you.innerHTML = members[i].name;
+              user[i - 1].appendChild(you);
             }
           }
         }
@@ -120,6 +128,7 @@
             deal_count = new Array(room[0].limits + 1).fill(0);
             ptext = new Array(room[0].limits + 1).fill("");
             count = new Array(room[0].limits + 1).fill(0);
+            use_chips = new Array(members.length - 1).fill(0);
             once = 2;
           }
           console.log(deal_count);
@@ -128,6 +137,13 @@
             if (once == 2) {
               bet_waiting.classList.add("disable");
               body.classList.remove("blur");
+              let bet_status = document.getElementById("bet_status");
+              let bet_text = "";
+              for (let i = 1; i < members.length; i++) {
+                use_chips[i - 1] = members[i].having_chip;
+                bet_text += "<p class='users_bet'>" + members[i].name + "さん : " + (members[i].having_chip + members[i].use_chip) + " (<span class='use_chip'> " + members[i].use_chip + " </span>) チップ</p>";
+              }
+              bet_status.innerHTML = bet_text;
               once = 3;
             }
             if (turn == user_number) {
@@ -159,21 +175,27 @@
               }
               dealer_card.innerHTML = dtext;
               let user = document.getElementsByClassName("user");
+              let dealer_total = document.getElementsByClassName("dealer_total")[0];
+              dealer_total.innerHTML = "ディーラーの合計:" + dealer.total;
+              let users_bet = document.getElementsByClassName("users_bet");
               for (let i = 1; i < members.length; i++) {
                 let result = members[i].result;
                 let result_text = "";
                 if (result == 1) {
-                  result_text = "YOUWIN!!";
+                  result_text = "WIN!!";
+                  users_bet[i - 1].innerHTML = members[i].name + "さん : " + (use_chips[i - 1] + members[i].use_chip * 2) + " (<font color='green' class='use_chip'> + " + members[i].use_chip + " </font>) チップ";
                 } else if (result == -1) {
-                  result_text = "YOULOSE...";
+                  result_text = "LOSE...";
+                  users_bet[i - 1].innerHTML = members[i].name + "さん : " + (use_chips[i - 1]) + " (<font color='red' class='use_chip'> - " + members[i].use_chip + " </font>) チップ";
                 } else if (result == 2) {
-                  result_text = "DRAW!";
+                  result_text = "DRAW";
+                  users_bet[i - 1].innerHTML = members[i].name + "さん : " + (use_chips[i - 1] + members[i].use_chip) + " (<font color='white' class='use_chip'> ± 0" + " </font>) チップ";
                 } else {
                   result_text = "error...";
                 }
                 let element = document.createElement("p");
                 element.innerText = result_text;
-                user[i - 1].append(element);
+                user[i - 1].appendChild(element);
 
               }
               once = 4;
@@ -248,9 +270,7 @@
     <p class="text-center">全員が集まるまでしばらくお待ちください</p><br />
     <p>現在の人数 <span id="user_count">〇〇人</span></p><br />
   </div>
-
-  <div id="p1"></div>
-  <div>
+  <div id="exit_button">
     <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark button" role="button">退室</a></p>
   </div>
 
@@ -263,6 +283,7 @@
       ディーラーの合計:?????
     </div>
   </div>
+
 
 
 
@@ -315,8 +336,8 @@
   <div id="waiting_turn" class="disable">
     <p>他のユーザの動作を待っています...</p>
   </div>
-  <div id="result_board" class="disable">
-    <p>You Win!!</p>
+  <div id="bet_status">
+
   </div>
   <!-- JavaScriptを読み込む // -->
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"

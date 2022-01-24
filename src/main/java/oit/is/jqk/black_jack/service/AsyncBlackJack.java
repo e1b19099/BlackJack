@@ -67,6 +67,7 @@ public class AsyncBlackJack {
       Userinfo ui = userinfoMapper.selectUserById(member.getUser_id());
       ArrayList<Deal> deal = dealMapper.selectDealById(member.getDeal_id());
       member.setTotal(sumHand(room_id, ui.getUser_id()));
+      member.setHaving_chip(ui.getChip());
       member.setDeals(deal);
       member.setName(ui.getUsername());
       members.add(member);
@@ -232,7 +233,7 @@ public class AsyncBlackJack {
         int turn = myroom.getTurn();
         switch (turn) {
           case -1:
-            if (myroom.getLimits() <= members.size() - 1 || noLimit == true) {
+            if (myroom.getLimits() <= members.size() - 1) {
               myroom.setLimit(true);
               updateTurn(room_id);
               myroom.setTurn(turn + 1);
@@ -241,17 +242,29 @@ public class AsyncBlackJack {
             break;
           case 0:
             int betted = roomUserMapper.selectBettedUserCount(room_id);
-            if (betted <= 1 && noLimit == false) {
+            if (betted <= 1) {
               init(room_id, members);
               updateTurn(room_id);
               myroom.setTurn(turn + 1);
-              noLimit = true;
             }
             break;
 
         }
         turn = myroom.getTurn();
+        if (turn >= 1) {
+          if (turn < members.size() && members.get(turn).getTotal() > 22) {
+            updateTurn(room_id);
+            myroom.setTurn(turn + 1);
+          }
+        }
         if (turn >= members.size()) {
+          members.get(0).setTotal(sumHand(room_id, 0));
+          while (members.get(0).getTotal() <= 16) {
+            Card Addcard = drawCard(room_id);
+            dealUser(room_id, 0, Addcard.getId());
+            // dList.add(Addcard);
+            members.get(0).setTotal(sumHand(room_id, 0));
+          }
           Members dealer = members.get(0);
           int d = dealer.getTotal();
           if (d > 21)

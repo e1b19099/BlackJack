@@ -18,6 +18,9 @@ body{
   color: white;
   height: 100%;
   background-color: green;
+  font-size: larger;
+  font-weight:bolder;
+  letter-spacing: 3px;
 }
 
 body.blur::before{
@@ -101,25 +104,32 @@ form{
 }
 .user_card{
   width:100%;
-  height:300px;
+  height:150px;
   /* border-radius: 10% / 10%; */
   border: 5px solid;
   border-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   /* margin-right: 20px; */
   margin: 0 auto;
-  padding-top: 10%;
+  /* padding-top: 5%; */
 }
 
 .dealer_card{
   width:20%;
-  height:300px;
+  height:150px;
   /* border-radius: 10% / 10%; */
   border: 5px solid;
   border-color: white;
   /* margin-right: 20px; */
   /* float: left; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   margin: 0 auto;
-  padding-top: 2%;
+  /* padding-top: 1%; */
 }
 
 .user_total
@@ -199,7 +209,7 @@ form{
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-around;
-
+  margin-top: 3%;
 }
 
 #users .user{
@@ -210,6 +220,7 @@ form{
 #dealer{
   margin: 0 auto;
   margin-bottom: 10px;
+  padding-top: 2%;
 }
 
 #hit_stand{
@@ -271,4 +282,40 @@ width:500px;
 #result_board.disable{
 display: none;
 z-index: -100;
+}
+
+
+#exit_button{
+  position: fixed;
+  top: 5%;
+  left: 2%;
+  transform: translateY(-50%) translateX(-50%);
+  z-index: 1000;
+}
+
+#bet_status{
+  width:400px;
+  height:200px;
+  position: absolute;
+  top: 20%;
+  left: 80%;
+  transform: translateY(-50%) translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  /* border-radius: 10% / 20%; */
+  border: 3px solid;
+  border-color: lightgreen;
+  z-index: 100;
+  display:flex;
+  flex-direction: column;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+}
+
+#bet_status p{
+  font-size: larger;
+  font-weight:bolder;
+  color: white;
+  letter-spacing: 3px;
+  text-align: center;
 }

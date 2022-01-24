@@ -7,6 +7,15 @@ public class Members extends RoomUser {
   String name;
   int total;
   int result;
+  int having_chip;
+
+  public int getHaving_chip() {
+    return having_chip;
+  }
+
+  public void setHaving_chip(int having_chip) {
+    this.having_chip = having_chip;
+  }
 
   public int getResult() {
     return result;
