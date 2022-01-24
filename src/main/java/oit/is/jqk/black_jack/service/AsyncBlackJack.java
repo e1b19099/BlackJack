@@ -292,6 +292,29 @@ public class AsyncBlackJack {
             myroom.setTurn(turn + 1);
             myroom.setMembers(members);
           }
+        } else if (turn > members.size()) {
+          Members dealer = members.get(0);
+          int d = dealer.getTotal();
+          if (d > 21)
+            d = 0;
+          for (int i = 1; i < members.size(); i++) {
+            Members member = members.get(i);
+            int p = member.getTotal();
+
+            if (p > 21)
+              p = -1;
+
+            if (p > d) {
+              member.setResult(1);
+            } else if (p < d) {
+              member.setResult(-1);
+            } else {
+              member.setResult(2);
+            }
+            // updateTurn(room_id);
+            // myroom.setTurn(turn + 1);
+            myroom.setMembers(members);
+          }
 
         } else if (turn >= 1 && turn <= members.size() - 1) {
           ArrayList<Deal> dealer_deals = members.get(0).getDeals();
@@ -304,7 +327,9 @@ public class AsyncBlackJack {
         TimeUnit.MILLISECONDS.sleep(300);
         dbUpdated = true;
       }
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
       // 例外の名前とメッセージだけ表示する
       logger.warn("Exception:" + e.getClass().getName() + ":" + e.getMessage());
     } finally {
