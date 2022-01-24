@@ -241,9 +241,9 @@ form{
 
 #waiting_turn{
   width:500px;
-  height:200px;
+  height:150px;
   position: absolute;
-  top: 85%;
+  top: 90%;
   left: 50%;
   transform: translateY(-50%) translateX(-50%);
   background-color: rgba(0, 0, 0, 0.8);

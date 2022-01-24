@@ -142,14 +142,20 @@
               bet_status.innerHTML = bet_text;
               once = 3;
             }
+            let hit_button = document.getElementById("hit_button");
+            let stand_button = document.getElementById("stand_button");
             if (turn == user_number) {
               let waiting_turn = document.getElementById("waiting_turn");
               waiting_turn.classList.add("disable");
+              hit_button.disabled = false;
+              stand_button.disabled = false;
             } else {
               let waiting_turn = document.getElementById("waiting_turn");
               if (waiting_turn.classList.contains("disable")) {
                 waiting_turn.classList.remove("disable");
               }
+              hit_button.disabled = true;
+              stand_button.disabled = true;
             }
             for (let i = deal_count[0]; i < dealer.deals.length; i++) {
               dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
@@ -165,6 +171,10 @@
               let waiting_turn = document.getElementById("waiting_turn");
               waiting_turn.classList.add("disable");
               dtext = "";
+              let hit_button = document.getElementById("hit_button");
+              let stand_button = document.getElementById("stand_button");
+              hit_button.disabled = true;
+              stand_button.disabled = true;
               for (let i = 0; i < dealer.deals.length; i++) {
                 dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
 
@@ -287,8 +297,8 @@
     <!--スタンド時にボタンが非表示に-->
   </div>
   <div id="hit_stand">
-    <input class="btn btn-info btn-lg active" type="button" onclick="hit();" value="ヒット" />
-    <input class="btn btn-danger btn-lg active" onclick="stand();" type=" button" value="スタンド" />
+    <input id="hit_button" class="btn btn-info btn-lg active" type="button" onclick="hit();" value="ヒット" />
+    <input id="stand_button" class="btn btn-danger btn-lg active" onclick="stand();" type=" button" value="スタンド" />
   </div>
 
 
