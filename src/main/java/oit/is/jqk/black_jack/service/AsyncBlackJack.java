@@ -257,6 +257,7 @@ public class AsyncBlackJack {
             myroom.setTurn(turn + 1);
           }
         }
+        turn = myroom.getTurn();
         if (turn >= members.size()) {
           members.get(0).setTotal(sumHand(room_id, 0));
           while (members.get(0).getTotal() <= 16) {

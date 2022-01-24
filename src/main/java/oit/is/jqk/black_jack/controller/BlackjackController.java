@@ -89,9 +89,14 @@ public class BlackjackController {
   @PostMapping("/signup")
   public String post_signup(@RequestParam String username, @RequestParam String password) {
     Userinfo newUser = new Userinfo();
-    newUser.setUsername(username);
-    newUser.setPassword(passwordEncoder().encode(password));
-    userservice.insertUserData(newUser);
+    if (uMapper.findUser(username).isEmpty() == false) {
+      return "error.html";
+    } else {
+      newUser.setUsername(username);
+      newUser.setPassword(passwordEncoder().encode(password));
+      userservice.insertUserData(newUser);
+    }
+
     return "signup.html";
   }
 
