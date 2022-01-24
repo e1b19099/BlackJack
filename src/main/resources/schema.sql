@@ -7,7 +7,7 @@ CREATE TABLE userinfo (
     user_id IDENTITY,
     username CHAR NOT NULL,
     password CHAR,
-    chip INT default(500)
+    chip INT default(1000)
 );
 CREATE TABLE room (
   room_id IDENTITY,
