@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -31,6 +33,7 @@ import oit.is.jqk.black_jack.model.RoomUserMapper;
 import oit.is.jqk.black_jack.model.Userinfo;
 import oit.is.jqk.black_jack.model.UserinfoMapper;
 import oit.is.jqk.black_jack.service.AsyncCountFruit56;
+import oit.is.jqk.black_jack.service.MyUserService;
 import oit.is.jqk.black_jack.service.AsyncBlackJack;
 
 @Controller
@@ -55,6 +58,9 @@ public class BlackjackController {
   DealMapper dealMapper;
 
   @Autowired
+  MyUserService userservice;
+
+  @Autowired
   private AsyncCountFruit56 ac56;
 
   @Autowired
@@ -69,6 +75,24 @@ public class BlackjackController {
   @GetMapping("/help")
   public String help() {
     return "help.html";
+  }
+
+  @GetMapping("/signup")
+  public String signup() {
+    return "signup.html";
+  }
+
+  PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @PostMapping("/signup")
+  public String post_signup(@RequestParam String username, @RequestParam String password) {
+    Userinfo newUser = new Userinfo();
+    newUser.setUsername(username);
+    newUser.setPassword(passwordEncoder().encode(password));
+    userservice.insertUserData(newUser);
+    return "signuped.html";
   }
 
   /*
@@ -340,7 +364,6 @@ public class BlackjackController {
     total = bj.sumHand(room_id, user.getUser_id());
 
     // ヒット処理
-    
 
     bj.stand(room_id);
     return "blackjack.html";

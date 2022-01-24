@@ -22,9 +22,8 @@ public class MyUserService implements UserDetailsService {
     this.uMapper = uMapper;
   }
 
-  public int insertUserData(Userinfo userinfo) {
-    
-    return 1;
+  public void insertUserData(Userinfo userinfo) {
+    uMapper.insertUserinfo(userinfo);
   }
 
   @Override
