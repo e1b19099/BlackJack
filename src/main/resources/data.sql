@@ -7,9 +7,6 @@ INSERT INTO userinfo (user_id,username,password,chip) VALUES (0,'dealer','$2y$10
 
 
 
-INSERT INTO room (room_id,limits,room_name,date) VALUES (1,4,'テスト用','2021-12-07');
-
-
 INSERT INTO card (id,suit,number) VALUES (1,'heart',1);
 INSERT INTO card (id,suit,number) VALUES (2,'heart',2);
 INSERT INTO card (id,suit,number) VALUES (3,'heart',3);
