@@ -243,7 +243,7 @@ form{
   width:500px;
   height:150px;
   position: absolute;
-  top: 90%;
+  top: 85%;
   left: 50%;
   transform: translateY(-50%) translateX(-50%);
   background-color: rgba(0, 0, 0, 0.8);
