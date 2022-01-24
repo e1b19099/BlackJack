@@ -83,10 +83,7 @@
         let user_total = document.getElementsByClassName("user_total");*/
         let body = document.body;
         room = JSON.parse(event.data);
-        console.log(room);
         let members = room[0].members;
-        console.log(members);
-        console.log(room[0].turn);
         let dealer = members[0];
         if (room[0].turn == -1 && member_count != members.length - 1) {
           let user_count = document.getElementById("user_count");
@@ -131,7 +128,6 @@
             use_chips = new Array(members.length - 1).fill(0);
             once = 2;
           }
-          console.log(deal_count);
           let turn = room[0].turn;
           if (turn >= 1 && turn < members.length) {
             if (once == 2) {
@@ -220,7 +216,6 @@
             deal_count[j] = count[j];
           }
         }
-        console.log(members);
       }
 
 

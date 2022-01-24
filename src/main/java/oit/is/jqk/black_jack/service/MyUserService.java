@@ -22,6 +22,11 @@ public class MyUserService implements UserDetailsService {
     this.uMapper = uMapper;
   }
 
+  public int insertUserData(Userinfo userinfo) {
+    
+    return 1;
+  }
+
   @Override
   public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 
