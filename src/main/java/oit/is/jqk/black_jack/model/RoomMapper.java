@@ -13,6 +13,9 @@ public interface RoomMapper {
   @Select("SELECT * from room;")
   ArrayList<Room> selectAllRoom();
 
+  @Select("SELECT * from room where turn < 1")
+  ArrayList<Room> selectAliveRoom();
+
   @Select("SELECT * from room where room_id = #{room_id}")
   Room selectRoomById(int room_id);
 
