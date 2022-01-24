@@ -14,98 +14,284 @@
   <script>
     let update_card;
 
-    function waitScreen() {
+    function disable_waitScreen() {
       let waitScreen = document.getElementById("wait_screen");
       let button = document.getElementById("disableButton");
       waitScreen.classList.add("disable");
     }
 
-    window.onload = function () {
-
-      var sse = new EventSource('/blackjack/status/' + [[${ room_id }]]);
-      sse.onmessage = function (event) {
-        room = JSON.parse(event.data);
-        console.log(room);
-        let members = room[0].members;
-        console.log(members);
-        let dealer = members[0];
-        members.forEach(function (key) {
-          console.log(key);
-        });
-        console.log(members);
-        document.getElementById("p1").textContent = event.data;
-        //document.getElementById("player_card").innerHTML = "<img src='/tramp/" + members[1].deals[0].id + ".jpg'/> ";
-
-
-
-
-      }
+    function enable_waitScreen() {
+      let waitScreen = document.getElementById("wait_screen");
+      let button = document.getElementById("disableButton");
+      waitScreen.classList.remove("disable");
     }
-    waitScreen();
+
+
+
+    function hit() {
+      console.log("HIT実行開始");
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET","/blackjack/" + [[${ room_id }]] + "/hit");
+      xhr.onreadystatechange = function (e) {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log("HIT!!!");
+          } else {
+            //
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    function stand() {
+      console.log("STAND実行開始");
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET","/blackjack/" + [[${ room_id }]] + "/stand");
+      xhr.onreadystatechange = function (e) {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log("STAND!!!");
+          } else {
+            //
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    window.onload = function () {
+      let flag = false;
+      let once = 1;
+      //let count;
+      let deal_count = new Array();
+      let ptext = new Array();
+      let count = new Array();
+      let dtext = "";
+      let limit_flag = false;
+      let member_count;
+      let user_number = -1;
+      let use_chips = new Array();
+      enable_waitScreen();
+      var sse = new EventSource('/blackjack/status/' + [[${ room_id }]] + '/' + [[${ user_id }]]);
+
+
+
+      sse.onmessage = function (event) {
+        let dealer_card = document.getElementsByClassName("dealer_card")[0];
+        /*let user_card = document.getElementsByClassName("user_card")[0];
+        let user_total = document.getElementsByClassName("user_total");*/
+        let body = document.body;
+        room = JSON.parse(event.data);
+        let members = room[0].members;
+        let dealer = members[0];
+        if (room[0].turn == -1 && member_count != members.length - 1) {
+          let user_count = document.getElementById("user_count");
+          member_count = members.length - 1;
+          user_count.innerText = member_count + " / " + (room[0].limits);
+        }
+        if (limit_flag == false && room[0].turn == 0 && room[0].limits <= members.length - 1) {
+          disable_waitScreen();
+          limit_flag = true;
+          let users = document.getElementById("users");
+          for (let i = 0; i < members.length - 1; i++) {
+            users.innerHTML += '    <div class="user"><div class="user_card" ></div ><div class="user_total"></div></div>';
+          }
+          let user = document.getElementsByClassName("user");
+          for (let i = 1; i < members.length; i++) {
+            if (members[i].user_id == [[${ user_id }]]) {
+              user_number = i;
+            }
+          }
+          for (let i = 1; i < members.length; i++) {
+            if (i == user_number) {
+              let me = document.createElement("p");
+              me.innerHTML = "<span class='arrow'>↑</span>YOU<span class='arrow'>↑</span>";
+              user[i - 1].appendChild(me);
+            } else {
+              let you = document.createElement("p");
+              you.innerHTML = members[i].name;
+              user[i - 1].appendChild(you);
+            }
+          }
+        }
+        let player = members[user_number];
+        if (user_number != -1 && player.use_chip != 0) {
+          if (once == 1) {
+            let bet_container = document.getElementById("bet_container");
+            let bet_waiting = document.getElementById("bet_waiting");
+            bet_waiting.classList.remove("disable");
+            bet_container.classList.add("disable");
+            deal_count = new Array(room[0].limits + 1).fill(0);
+            ptext = new Array(room[0].limits + 1).fill("");
+            count = new Array(room[0].limits + 1).fill(0);
+            use_chips = new Array(members.length - 1).fill(0);
+            once = 2;
+          }
+          let turn = room[0].turn;
+          if (turn >= 1 && turn < members.length) {
+            if (once == 2) {
+              bet_waiting.classList.add("disable");
+              body.classList.remove("blur");
+              let bet_status = document.getElementById("bet_status");
+              let bet_text = "";
+              for (let i = 1; i < members.length; i++) {
+                use_chips[i - 1] = members[i].having_chip;
+                bet_text += "<p class='users_bet'>" + members[i].name + "さん : " + (members[i].having_chip + members[i].use_chip) + " (<span class='use_chip'> " + members[i].use_chip + " </span>) チップ</p>";
+              }
+              bet_status.innerHTML = bet_text;
+              once = 3;
+            }
+            if (turn == user_number) {
+              let waiting_turn = document.getElementById("waiting_turn");
+              waiting_turn.classList.add("disable");
+            } else {
+              let waiting_turn = document.getElementById("waiting_turn");
+              if (waiting_turn.classList.contains("disable")) {
+                waiting_turn.classList.remove("disable");
+              }
+            }
+            for (let i = deal_count[0]; i < dealer.deals.length; i++) {
+              dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
+              if (deal_count[0] < dealer.deals.length) {
+                dealer_card.innerHTML = dtext;
+              }
+              count[0] = dealer.deals.length;
+            }
+            deal_count[0] = count[0];
+          }
+          if (turn >= members.length) {
+            if (once == 3) {
+              let waiting_turn = document.getElementById("waiting_turn");
+              waiting_turn.classList.add("disable");
+              dtext = "";
+              for (let i = 0; i < dealer.deals.length; i++) {
+                dtext += '<img width="20%" src="/tramp/' + dealer.deals[i].id + '.jpg" />';
+
+              }
+              dealer_card.innerHTML = dtext;
+              let user = document.getElementsByClassName("user");
+              let dealer_total = document.getElementsByClassName("dealer_total")[0];
+              dealer_total.innerHTML = "ディーラーの合計:" + dealer.total;
+              let users_bet = document.getElementsByClassName("users_bet");
+              for (let i = 1; i < members.length; i++) {
+                let result = members[i].result;
+                let result_text = "";
+                if (result == 1) {
+                  result_text = "WIN!!";
+                  users_bet[i - 1].innerHTML = members[i].name + "さん : " + (use_chips[i - 1] + members[i].use_chip * 2) + " (<font color='green' class='use_chip'> + " + members[i].use_chip + " </font>) チップ";
+                } else if (result == -1) {
+                  result_text = "LOSE...";
+                  users_bet[i - 1].innerHTML = members[i].name + "さん : " + (use_chips[i - 1]) + " (<font color='red' class='use_chip'> - " + members[i].use_chip + " </font>) チップ";
+                } else if (result == 2) {
+                  result_text = "DRAW";
+                  users_bet[i - 1].innerHTML = members[i].name + "さん : " + (use_chips[i - 1] + members[i].use_chip) + " (<font color='white' class='use_chip'> ± 0" + " </font>) チップ";
+                } else {
+                  result_text = "error...";
+                }
+                let element = document.createElement("p");
+                element.innerText = result_text;
+                user[i - 1].appendChild(element);
+
+              }
+              once = 4;
+            }
+          }
+
+
+
+
+          let user = document.getElementsByClassName("user");
+          for (let j = 1; j < members.length; j++) {
+            let user_card = user[j - 1].childNodes[0];
+            let user_total = user[j - 1].childNodes[1];
+            for (let i = deal_count[j]; i < members[j].deals.length; i++) {
+              ptext[j] += '<img width="20%" src="/tramp/' + members[j].deals[i].id + '.jpg" />';
+              if (deal_count[j] < members[j].deals.length) {
+                user_total.innerHTML = "<p>合計:" + members[j].total + "</p>";
+                user_card.innerHTML = ptext[j];
+              }
+              count[j] = members[j].deals.length;
+            }
+            deal_count[j] = count[j];
+          }
+        }
+      }
+
+
+      //document.getElementById("p1").textContent = event.data;
+      //document.getElementById("player_card").innerHTML = "<img src='/tramp/" + members[1].deals[0].id + ".jpg' /> ";
+
+
+
+      document.getElementById("submit_bet").addEventListener("click",function () {
+        console.log("BET開始！！");
+        // FoemDataオブジェクトに要素セレクタを渡して宣言する
+        var formDatas = document.getElementById("bet_form");
+        var mixedDatas = new FormData(formDatas);
+        if (mixedDatas["bet"] > 100 || mixedDatas["bet"] <= 0) {
+          alert("チップは1~100の範囲でかけてください");
+          return;
+        }
+
+        // XHRの宣言
+        var XHR = new XMLHttpRequest();
+
+        // openメソッドにPOSTを指定して送信先のURLを指定します
+        XHR.open("POST","/blackjack/" + [[${ room_id }]] + "/bet/",true);
+
+        // sendメソッドにデータを渡して送信を実行する
+        XHR.send(mixedDatas);
+
+        // サーバの応答をonreadystatechangeイベントで検出して正常終了したらデータを取得する
+        XHR.onreadystatechange = function () {
+          if (XHR.readyState == 4 && XHR.status == 200) {
+            // POST送信した結果を表示する
+            console.log("BET完了！！");
+          }
+        };
+      },false);
+    }
+
+
+
+
   </script>
 </head>
 
-<body>
+<body class="blur">
   <div id="wait_screen">
 
-    <p class="text-center">メンバーが集まるのを待っています</p>
-    <input id="disableButton" type="button" onclick="waitScreen();" value="非表示" />
+    <p class="text-center">全員が集まるまでしばらくお待ちください</p><br />
+    <p>現在の人数 <span id="user_count">〇〇人</span></p><br />
   </div>
-
-  <div id="p1"></div>
-  <div>
+  <div id="exit_button">
     <p><a th:href="@{/exit/{id}(id=${room_id})}" class="btn btn-sm btn-dark button" role="button">退室</a></p>
   </div>
-  <div th:if=${room_id}>
-    <h1 class="text-center welcome">ルーム[[${room_id}]]へようこそ！！</h1>
+
+  <div id="dealer" class="text-center">
+    <p id="dealer_text">ディーラー</p>
+    <div class="dealer_card">
+
+    </div>
+    <div class="dealer_total">
+      ディーラーの合計:?????
+    </div>
   </div>
 
-  <div class="text-center" th:if="${bet}">
-    賭けたチップ:[[${bet}]]<br>
-    <a th:href="@{/blackjack/{rid}/start(rid=${room_id})}" class="btn btn-sm btn-dark marbutton" role="button">START</a>
-  </div>
 
 
-  <div class="text-center" th:if="${cards}">
-    <h2 class="player">プレイヤーの手札</h2>
-    <div class="card" th:each="card,stat:${cards}">
-      <img height="100px" th:src="@{${'/tramp/' + card.id + '.jpg'}}" alt="" />
-    </div>
-    <div class="delfloat">
-      合計:[[${total}]]
-    </div>
+
+
+  <div id="users" class="text-center">
     <!--スタンド時にボタンが非表示に-->
-    <div th:unless="${stand_flag}">
-
-      <!--Hit_Z0413-->
-      <form action="hit" method="get">
-        <input type="submit" value="ヒット">
-      </form>
-
-      <form action="stand" method="get">
-        <input type="submit" value="スタンド">
-      </form>
-    </div>
-    <div th:if="${stand_flag}">
-      スタンドしました
-    </div>
+  </div>
+  <div id="hit_stand">
+    <input class="btn btn-info btn-lg active" type="button" onclick="hit();" value="ヒット" />
+    <input class="btn btn-danger btn-lg active" onclick="stand();" type=" button" value="スタンド" />
   </div>
 
-  <div class="text-center" th:if="${dCards}">
-    <h2 class="dealer">ディーラーの手札</h2>
-    <div class="card" th:each="card,stat:${dCards}">
-      <p th:if="${stand_flag == true || stat.count gt 1}">
-        <img height="100px" th:src="@{${'/tramp/' + card.id + '.jpg'}}" alt="" />
-      <p th:if="${stand_flag == false && stat.first}">
-        <img height="100px" src="/tramp/53.jpg" alt="" />
-      </p>
-    </div>
-  </div>
 
-  <div class="delfloat" th:if="${dTotal}">
-    スタンドします<br>
-    スタンド後の合計:[[${dTotal}]]
-  </div>
 
   <div class="largefont text-center" th:switch="${result}">
     <p th:case=1>
@@ -129,12 +315,24 @@
     持ちチップ:[[${user.chip}]]<br>
   </div>
 
-  <div class="text-center" th:unless="${bet}">
-    チップを賭けてください(100チップまで可)
-    <form th:action="@{/blackjack/{rid}/bet(rid=${room_id})}" method="post">
-      <input type="number" name="bet" id="check" required>
-      <input type="submit" value="ベット" onclick="betcontrol()"><input type="reset" value="リセット">
-    </form>
+  <div id="bet_container" class="text-center">
+    <div id="container">
+      <p>ベットして下さい</p>
+      <form id="bet_form" onsubmit="return false;" action="***" method="***">
+        <input type="number" name="bet" id="check" required>
+        <input type="button" id="submit_bet" value="ベット">
+        <input type="reset" value="リセット">
+      </form>
+    </div>
+  </div>
+  <div id="bet_waiting" class="disable">
+    <p>他の人のベットが完了するのを待っています...</p>
+  </div>
+  <div id="waiting_turn" class="disable">
+    <p>他のユーザの動作を待っています...</p>
+  </div>
+  <div id="bet_status">
+
   </div>
   <!-- JavaScriptを読み込む // -->
   <script src="https://code.jquery.com/jquery-3.1.0.min.js"

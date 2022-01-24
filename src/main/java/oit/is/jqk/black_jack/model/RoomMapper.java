@@ -20,7 +20,7 @@ public interface RoomMapper {
   @Options(useGeneratedKeys = true, keyColumn = "room_id", keyProperty = "room_id")
   void insertRoom(Room room);
 
-  @Update("UPDATE ROOM SET TURN=#{turn} WHERE ID = #{ROOM_ID}")
+  @Update("UPDATE ROOM SET TURN=#{turn} WHERE ROOM_ID = #{room_id}")
   void updateTurnById(Room room);
 
 }

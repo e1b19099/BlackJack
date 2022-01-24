@@ -1,12 +1,19 @@
 package oit.is.jqk.black_jack.model;
 
-import java.sql.Timestamp;
-
 public class RoomUser extends Userinfo {
   int room_id;
   int user_id;
   int deal_id;
+  int use_chip;
   String time;
+
+  public int getUse_chip() {
+    return use_chip;
+  }
+
+  public void setUse_chip(int use_chip) {
+    this.use_chip = use_chip;
+  }
 
   public String getTime() {
     return time.toString();
@@ -25,6 +32,7 @@ public class RoomUser extends Userinfo {
     this.user_id = roomUser.getUser_id();
     this.deal_id = roomUser.getDeal_id();
     this.time = roomUser.getTime();
+    this.use_chip = roomUser.getUse_chip();
   }
 
   public int getRoom_id() {
