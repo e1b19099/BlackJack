@@ -258,7 +258,7 @@ public class AsyncBlackJack {
           }
         }
         turn = myroom.getTurn();
-        if (turn >= members.size()) {
+        if (turn == members.size()) {
           members.get(0).setTotal(sumHand(room_id, 0));
           while (members.get(0).getTotal() <= 16) {
             Card Addcard = drawCard(room_id);
@@ -288,6 +288,8 @@ public class AsyncBlackJack {
               member.setResult(2);
               userinfoMapper.updateChipById(member.getUser_id(), member.getUse_chip());
             }
+            updateTurn(room_id);
+            myroom.setTurn(turn + 1);
             myroom.setMembers(members);
           }
 
