@@ -8,7 +8,7 @@
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
   <!--bootstrapでは実装が困難なときのためのcssファイル-->
-  <link rel="stylesheet" href="/room.css">
+  <link rel="stylesheet" href="/css/room.css">
   <title>ルーム選択</title>
 </head>
 
@@ -24,7 +24,7 @@
         <th>ルーム名</th>
         <th>作成日</th>
         <th>人数</th>
-        <th>入室</td>
+        <th>入室</th>
       </tr>
       <div th:each="room,stat:${rooms}">
         <tr>

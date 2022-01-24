@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c');
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP');
+
+body h1{
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  /*文字の色をwhiteに変更*/
+  color: white;
+  /*背景の色をblackに変更*/
+  background-color: black;
+  padding: 10px;
+}
+
+body{
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.marbutton{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

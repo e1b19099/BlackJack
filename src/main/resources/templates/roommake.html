@@ -6,20 +6,19 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="/roommake.css">
+  <link rel="stylesheet" href="/css/roommake.css">
   <title>ルーム作成</title>
 </head>
 
 <body>
-  <h1>ルーム作成画面</h1>
-  <form action="/room" method="post">
-    ルーム名：<input type="text" name="roomname" /><br>
-    利用人数：<input type="number" name="count" /><br>
+  <h1 class="text-center">ルーム作成画面</h1>
+  <form action="/room" method="post" name="roommake">
+    ルーム名：<input type="text" name="roomname" required /><br>
+    利用人数：<input type="number" name="count" required /><br>
     <input class="btn-dark marbutton" type="submit" value="作成" />
   </form>
 
   <p class="text-center"><a class="btn btn-sm btn-dark" href="/room">ルーム選択画面に戻る</a></p>
-
 </body>
 
 </html>
